@@ -31,6 +31,9 @@ CREATE TABLE IF NOT EXISTS `users`
 );''')
         self.__conn.execute('''
 CREATE UNIQUE INDEX IF NOT EXISTS
+`index_users_id` on `users`(`id`);''')
+        self.__conn.execute('''
+CREATE UNIQUE INDEX IF NOT EXISTS
 `index_users_username` on `users`(`username`);''')
 
         # table `posts`

@@ -10,6 +10,7 @@ class SQLiteDBHandler:
     def __create_tables(self):
         # enables foreign key constraint support
         self.__conn.execute('PROGMA foreign_key = ON;')
+
         # table `boards`
         self.__conn.execute('''
 CREATE TABLE IF NOT EXISTS `boards`
@@ -17,6 +18,10 @@ CREATE TABLE IF NOT EXISTS `boards`
     `id` INTEGER PRIMARY KEY AUTOINCREMENT,
     `name` TEXT UNIQUE NOT NULL
 );''')
+        self.__conn.execute('''
+CREATE UNIQUE INDEX IF NOT EXISTS
+`index_boards_name` on `boards`(`name`);''')
+
         # table `users`
         self.__conn.execute('''
 CREATE TABLE IF NOT EXISTS `users`
@@ -24,9 +29,13 @@ CREATE TABLE IF NOT EXISTS `users`
     `id` INTEGER PRIMARY KEY AUTOINCREMENT,
     `username` TEXT UNIQUE NOT NULL
 );''')
+        self.__conn.execute('''
+CREATE UNIQUE INDEX IF NOT EXISTS
+`index_users_username` on `users`(`username`);''')
+
         # table `posts`
         self.__conn.execute('''
-CREATE TABLE IF NOT EXISTS `post`
+CREATE TABLE IF NOT EXISTS `posts`
 (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT,
     `board` INTEGER NOT NULL,
@@ -42,6 +51,22 @@ CREATE TABLE IF NOT EXISTS `post`
     FOREIGN KEY (board) REFERENCES board(id),
     FOREIGN KEY (author) REFERENCES users(id)
 );''')
+        self.__conn.execute('''
+CREATE UNIQUE INDEX IF NOT EXISTS
+`index_posts_id` on `posts`(`id`);''')
+        self.__conn.execute('''
+CREATE UNIQUE INDEX IF NOT EXISTS
+`index_posts_post_id` on `posts`(`post_id`);''')
+        self.__conn.execute('''
+CREATE INDEX IF NOT EXISTS
+`index_posts_author` on `posts`(`author`);''')
+        self.__conn.execute('''
+CREATE INDEX IF NOT EXISTS
+`index_posts_date_time` on `posts`(`date_time`);''')
+        self.__conn.execute('''
+CREATE INDEX IF NOT EXISTS
+`index_posts_ip` on `posts`(`ip`);''')
+
         # table `post_content`
         self.__conn.execute('''
 CREATE TABLE IF NOT EXISTS `post_content`
@@ -51,6 +76,10 @@ CREATE TABLE IF NOT EXISTS `post_content`
     `content` TEXT NOT NULL,
     FOREIGN KEY (post) REFERENCES posts(id)
 );''')
+        self.__conn.execute('''
+CREATE UNIQUE INDEX IF NOT EXISTS
+`index_post_content_post` on `post_content`(`post`);''')
+
         # table `pushes`
         self.__conn.execute('''
 CREATE TABLE IF NOT EXISTS `pushes`
@@ -63,6 +92,22 @@ CREATE TABLE IF NOT EXISTS `pushes`
     `ip` TEXT,
     `date_time` INTEGER NOT NULL
 );''')
+        self.__conn.execute('''
+CREATE INDEX IF NOT EXISTS
+`index_pushes_post` on `pushes`(`post`);''')
+        self.__conn.execute('''
+CREATE INDEX IF NOT EXISTS
+`index_pushes_type` on `pushes`(`type`);''')
+        self.__conn.execute('''
+CREATE INDEX IF NOT EXISTS
+`index_pushes_author` on `pushes`(`author`);''')
+        self.__conn.execute('''
+CREATE INDEX IF NOT EXISTS
+`index_pushes_ip` on `pushes`(`ip`);''')
+        self.__conn.execute('''
+CREATE INDEX IF NOT EXISTS
+`index_pushes_date_time` on `pushes`(`date_time`);''')
+
         # table `crawled_posts`
         self.__conn.execute('''
 CREATE TABLE IF NOT EXISTS `crawled_posts`
@@ -72,6 +117,12 @@ CREATE TABLE IF NOT EXISTS `crawled_posts`
     `date_time` NOT NULL,
     FOREIGN KEY (post) REFERENCES posts(id)
 );''')
+        self.__conn.execute('''
+CREATE UNIQUE INDEX IF NOT EXISTS
+`index_crawled_posts_post` on `crawled_posts`(`post`);''')
+        self.__conn.execute('''
+CREATE UNIQUE INDEX IF NOT EXISTS
+`index_crawled_posts_date_time` on `crawled_posts`(`date_time`);''')
 
     def __enter__(self):
         self.__conn = sqlite3.connect(self.__path)

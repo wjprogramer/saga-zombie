@@ -27,13 +27,13 @@
 | `id`           | `INTEGER` | `PRIMARY KEY`<br />`AUTOINCREMENT`        |                                                            |
 | `board`        | `INTEGER` | `FOREIGN KEY (boards.id)`<br />`NOT NULL` | `Gossiping`                                                |
 | `index`        | `INTEGER` | `NOT NULL`                                | `70000`                                                    |
-| `post_id`      | `TEXT`    | `UNIQUE`<br />`NOT NULL`                  | `1QQ10QRo`                                                 |
+| `post_id`      | `TEXT`    | `UNIQUE`                                  | `1QQ10QRo`                                                 |
 | `author`       | `INTEGER` | `FOREIGN KEY (users.id)`<br />`NOT NULL`  | `audi86`                                                   |
-| `date_time`    | `INTEGER` | `NOT NULL`                                | `Wed Jan 24 12:48:24 2018`<br />(Unix Time)                |
-| `title`        | `TEXT`    | `NOT NULL`                                | `[問卦] 在香港唸到大學是不是很屌`                          |
-| `web_url`      | `TEXT`    | `NOT NULL`                                | `https://www.ptt.cc/bbs/Gossiping/M.1543497666.A.6EC.html` |
-| `money`        | `INTEGER` | `NOT NULL`                                | `1`                                                        |
-| `ip`           | `TEXT`    | `NOT NULL`                                | `223.141.187.205`                                          |
+| `date_time`    | `INTEGER` |                                           | `Wed Jan 24 12:48:24 2018`<br />(Unix Time)                |
+| `title`        | `TEXT`    |                                           | `[問卦] 在香港唸到大學是不是很屌`                          |
+| `web_url`      | `TEXT`    |                                           | `https://www.ptt.cc/bbs/Gossiping/M.1543497666.A.6EC.html` |
+| `money`        | `INTEGER` |                                           | `1`                                                        |
+| `ip`           | `TEXT`    |                                           | `223.141.187.205`                                          |
 | `delete_state` | `INTEGER` | `NOT NULL`                                | `0`                                                        |
 | `list_date`    | `TEXT`    | `NOT NULL`                                | `1/24`                                                     |
 

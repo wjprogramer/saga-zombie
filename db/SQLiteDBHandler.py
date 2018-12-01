@@ -77,6 +77,135 @@ class SQLiteDBHandler:
         self.__counter_lock = Lock()
         self.__commit_lock = Lock()
 
+    def query(self, q: str):
+        return self.__execute_read(q)
+
+    def get_boards(self):
+        return self.__execute_read('SELECT * FROM `boards`;')
+
+    def get_users(self):
+        return self.__execute_read('SELECT * FROM `users`;')
+
+    def get_posts(self, after: int=0):
+        if after == 0:
+            return self.__execute_read('SELECT * FROM `posts`;')
+        return self.__execute_read(
+            'SELECT * FROM `posts` WHERE `date_time` >= :after ;',
+            { 'after': after })
+
+    def get_pushes(self, after: int=0):
+        if after == 0:
+            return self.__execute_read('SELECT * FROM `pushes`;')
+        return self.__execute_read(
+            'SELECT * FROM `pushes` WHERE `date_time` >= :after ;',
+            { 'after': after })
+
+    def get_board_id(self, board: str) -> int:
+        return self.__execute_read(
+            'SELECT `id` FROM `boards` WHERE `name` = :board ;',
+            { 'name': board }
+        )
+
+    def get_user_id(self, username: str) -> int:
+        return self.__execute_read(
+            'SELECT `id` FROM `users` WHERE `username` = :username ;',
+            { 'username': username }
+        )
+
+    def get_post(self, board, index: int):
+        if isinstance(board, int):
+            return self.__execute_read(
+                'SELECT * FROM `posts` WHERE `board` = :board AND `index` = :index ;',
+                { 'board': board, 'index': index }
+            )
+        return self.__execute_read('''
+SELECT * FROM `posts`
+WHERE `board` = (
+    SELECT `id` FROM `boards`
+    WHERE `name` = :board
+) AND `index` = :index ;''',
+            { 'board': board, 'index': index}
+        )
+
+    def get_post_pushes(self, board, index: int):
+        if isinstance(board, int):
+            return self.__execute_read('''
+SELECT * FROM `pushes`
+WHERE `post` = (
+    SELECT `id` FROM `posts`
+    WHERE `board` = :board
+        AND `index` = :index
+);
+            ''', { 'board': board, 'index': index })
+        return self.__execute_read('''
+SELECT * FROM `pushes`
+WHERE `post` = (
+    SELECT `id` FROM `posts`
+    WHERE `board` = (
+        SELECT `id` FROM `boards`
+        WHERE `name` = :board
+    ) AND `index` = :index
+);
+        ''', { 'board': board, 'index': index })
+
+    def get_posts_by_user_id(self, user_id: int, after: int=0):
+        if after == 0:
+            return self.__execute_read(
+                'SELECT * FROM `posts` WHERE `author` = :user_id ;',
+                { 'user_id': user_id }
+            )
+        return self.__execute_read(
+            'SELECT * FROM `posts` WHERE `author` = :user_id AND `date_time` >= :after ;',
+            { 'user_id': user_id, 'after': after }
+        )
+
+    def get_posts_by_username(self, username: str, after: int=0):
+        if after == 0:
+            return self.__execute_read('''
+SELECT * FROM `posts`
+WHERE `author` = (
+    SELECT `id` FROM `users`
+    WHERE `username` = :username
+);''', { 'username': username })
+        return self.__execute_read('''
+SELECT * FROM `posts`
+WHERE `author` = (
+    SELECT `id` FROM `users`
+    WHERE `username` = :username
+) AND `date_time` >= :after ;''', { 'username': username, 'after': after })
+
+    def get_posts_by_ip(self, ip: str):
+        return self.__execute_read('SELECT * FROM `posts` WHERE `ip` = :ip ;', { 'ip': ip })
+
+    def get_pushes_by_user_id(self, user_id: int, after: int=0):
+        if after == 0:
+            return self.__execute_read(
+                'SELECT * FROM `pushes` WHERE `author` = :user_id ;',
+                { 'user_id': user_id }
+            )
+        return self.__execute_read(
+            'SELECT * FROM `pushes` WHERE `author` = :user_id AND `date_time` > :after ;',
+            { 'user_id': user_id, 'after': after }
+        )
+
+    def get_pushes_by_username(self, username: str, after: int=0):
+        if after == 0:
+            return self.__execute_read('''
+SELECT * FROM `pushes`
+WHERE `author` = (
+    SELECT `id` FROM `users`
+    WHERE `username` = :username
+);''', { 'username': username })
+        return self.__execute_read('''
+SELECT * FROM `pushes`
+WHERE `author` = (
+    SELECT `id` FROM `users`
+    WHERE `username` = :username
+) AND `date_time` >= :after ;''', { 'username': username, 'after': after })
+
+    def get_pushes_by_ip(self, ip: str):
+        return self.__execute_read('SELECT * FROM `pushes` WHERE `ip` = :ip ;', { 'ip': ip })
+
     def add_user(self, user: str):
         try:
             self.__execute('''
@@ -105,7 +234,7 @@ VALUES ( :board );''', {'board': board})
         self.add_user(author)
         self.add_board(board)
 
-        self.__execute('''
+        self.__execute_write('''
 INSERT OR REPLACE INTO `posts`
 (
     `id`,
@@ -163,7 +292,7 @@ VALUES
         )
 
         if delete_status == 0:
-            self.__execute('''
+            self.__execute_write('''
 INSERT OR REPLACE INTO `posts_content`
 (`id`, `post`, `content`)
 VALUES
@@ -196,7 +325,7 @@ VALUES
             )
 
             # delete existing pushes
-            self.__execute('''
+            self.__execute_write('''
 DELETE FROM `pushes`
 WHERE `post` = (
     SELECT `id` FROM `posts`
@@ -215,7 +344,7 @@ WHERE `post` = (
             for push in post.getPushList():
                 author = push.getAuthor()
                 self.add_user(author)
-                self.__execute('''
+                self.__execute_write('''
 INSERT INTO `pushes`
 (
     `post`,
@@ -254,7 +383,7 @@ VALUES
                         'date_time': get_push_time(year, push)
                     })
 
-        self.__execute('''
+        self.__execute_write('''
 INSERT OR REPLACE INTO `crawled_posts`
 (`id`, `post`, `date_time`)
 VALUES
@@ -285,11 +414,14 @@ VALUES
                 'date_time': get_current_time()
             })
 
-    def __execute(self, *args, **kwargs):
+    def __execute_read(self, *args, **kwargs):
         with self.__execution_lock:
-            result = self.__conn.execute(*args, **kwargs)
+            return self.__conn.execute(*args, **kwargs).fetchall()
+
+    def __execute_write(self, *args, **kwargs):
+        with self.__execution_lock:
+            self.__conn.execute(*args, **kwargs)
             self.__op_count_increment()
-            return result
 
     def __op_count_increment(self):
         with self.__counter_lock:

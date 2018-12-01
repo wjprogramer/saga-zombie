@@ -8,7 +8,13 @@
 pip3 install -r requirements.txt
 ```
 
-## 注意！！
+## 資料庫架構
+
+[點我](./Database structure.md)
+
+## Dev
+
+### 注意！！
 
 爬文不要用 `PTTLibrary.PTT.crawlBoard` ! 它會自爆！！！
 

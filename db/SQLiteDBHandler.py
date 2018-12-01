@@ -101,6 +101,7 @@ VALUES ( :board );''', {'board': board})
 
         author = get_post_author_id(post)
         board = post.getBoard()
+        delete_status = post.getDeleteStatus()
         self.add_user(author)
         self.add_board(board)
 
@@ -157,11 +158,12 @@ VALUES
                 'web_url': post.getWebUrl(),
                 'money': post.getMoney(),
                 'ip': post.getIP(),
-                'delete_state': post.getDeleteStatus()
+                'delete_state': delete_status
             }
         )
 
-        self.__execute('''
+        if delete_status == 0:
+            self.__execute('''
 INSERT OR REPLACE INTO `posts_content`
 (`id`, `post`, `content`)
 VALUES
@@ -185,16 +187,16 @@ VALUES
     ),
     :content
 );
-            ''',
-            {
-                'board': board,
-                'index': index,
-                'content': post.getContent()
-            }
-        )
+                ''',
+                {
+                    'board': board,
+                    'index': index,
+                    'content': post.getContent()
+                }
+            )
 
-        # delete existing pushes
-        self.__execute('''
+            # delete existing pushes
+            self.__execute('''
 DELETE FROM `pushes`
 WHERE `post` = (
     SELECT `id` FROM `posts`
@@ -204,16 +206,16 @@ WHERE `post` = (
     ) AND `index` = :index
 );
             ''',
-            {
-                'board': board,
-                'index': index
-            })
+                {
+                    'board': board,
+                    'index': index
+                })
 
-        year = get_post_year(post)
-        for push in post.getPushList():
-            author = push.getAuthor()
-            self.add_user(author)
-            self.__execute('''
+            year = get_post_year(post)
+            for push in post.getPushList():
+                author = push.getAuthor()
+                self.add_user(author)
+                self.__execute('''
 INSERT INTO `pushes`
 (
     `post`,
@@ -241,16 +243,16 @@ VALUES
     :ip ,
     :date_time
 )
-                ''',
-                {
-                    'board': board,
-                    'index': index,
-                    'type': push.getType(),
-                    'author': push.getAuthor(),
-                    'content': push.getContent(),
-                    'ip': push.getIP(),
-                    'date_time': get_push_time(year, push)
-                })
+                    ''',
+                    {
+                        'board': board,
+                        'index': index,
+                        'type': push.getType(),
+                        'author': push.getAuthor(),
+                        'content': push.getContent(),
+                        'ip': push.getIP(),
+                        'date_time': get_push_time(year, push)
+                    })
 
         self.__execute('''
 INSERT OR REPLACE INTO `crawled_posts`
@@ -294,6 +296,7 @@ VALUES
             self.__op_count += 1
             if self.__op_count >= self.__max_op_count:
                 self.__commit_now()
+                self.__op_count = 0
 
     def __commit_now(self):
         with self.__commit_lock:

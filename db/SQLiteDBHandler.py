@@ -208,7 +208,7 @@ WHERE `author` = (
 
     def add_user(self, user: str):
         try:
-            self.__execute('''
+            self.__execute_write('''
 INSERT INTO `users` (`username`)
 VALUES ( :user );''', {'user': user})
         except:
@@ -216,7 +216,7 @@ VALUES ( :user );''', {'user': user})
 
     def add_board(self, board: str):
         try:
-            self.__execute('''
+            self.__execute_write('''
 INSERT INTO `boards` (`name`)
 VALUES ( :board );''', {'board': board})
         except:
@@ -334,7 +334,7 @@ WHERE `post` = (
         WHERE `name` = :board
     ) AND `index` = :index
 );
-            ''',
+                ''',
                 {
                     'board': board,
                     'index': index
@@ -406,7 +406,7 @@ VALUES
         ) AND `index` = :index
     ),
     :date_time
-)
+);
             ''',
             {
                 'board': board,
@@ -444,10 +444,10 @@ CREATE TABLE IF NOT EXISTS `boards`
 );''')
         self.__conn.execute('''
 CREATE UNIQUE INDEX IF NOT EXISTS
-`index_boards_id` on `boards`(`id`);''')
+`index_boards_id` ON `boards`(`id`);''')
         self.__conn.execute('''
 CREATE UNIQUE INDEX IF NOT EXISTS
-`index_boards_name` on `boards`(`name`);''')
+`index_boards_name` ON `boards`(`name`);''')
 
         # table `users`
         self.__conn.execute('''
@@ -458,10 +458,10 @@ CREATE TABLE IF NOT EXISTS `users`
 );''')
         self.__conn.execute('''
 CREATE UNIQUE INDEX IF NOT EXISTS
-`index_users_id` on `users`(`id`);''')
+`index_users_id` ON `users`(`id`);''')
         self.__conn.execute('''
 CREATE UNIQUE INDEX IF NOT EXISTS
-`index_users_username` on `users`(`username`);''')
+`index_users_username` ON `users`(`username`);''')
 
         # table `posts`
         self.__conn.execute('''
@@ -484,19 +484,19 @@ CREATE TABLE IF NOT EXISTS `posts`
 );''')
         self.__conn.execute('''
 CREATE UNIQUE INDEX IF NOT EXISTS
-`index_posts_id` on `posts`(`id`);''')
+`index_posts_id` ON `posts`(`id`);''')
         self.__conn.execute('''
 CREATE UNIQUE INDEX IF NOT EXISTS
-`index_posts_post_id` on `posts`(`post_id`);''')
+`index_posts_post_id` ON `posts`(`post_id`);''')
         self.__conn.execute('''
 CREATE INDEX IF NOT EXISTS
-`index_posts_author` on `posts`(`author`);''')
+`index_posts_author` ON `posts`(`author`);''')
         self.__conn.execute('''
 CREATE INDEX IF NOT EXISTS
-`index_posts_date_time` on `posts`(`date_time`);''')
+`index_posts_date_time` ON `posts`(`date_time`);''')
         self.__conn.execute('''
 CREATE INDEX IF NOT EXISTS
-`index_posts_ip` on `posts`(`ip`);''')
+`index_posts_ip` ON `posts`(`ip`);''')
 
         # table `post_content`
         self.__conn.execute('''
@@ -509,10 +509,10 @@ CREATE TABLE IF NOT EXISTS `posts_content`
 );''')
         self.__conn.execute('''
 CREATE UNIQUE INDEX IF NOT EXISTS
-`index_posts_content_id` on `posts_content`(`id`);''')
+`index_posts_content_id` ON `posts_content`(`id`);''')
         self.__conn.execute('''
 CREATE UNIQUE INDEX IF NOT EXISTS
-`index_posts_content_post` on `posts_content`(`post`);''')
+`index_posts_content_post` ON `posts_content`(`post`);''')
 
         # table `pushes`
         self.__conn.execute('''
@@ -528,22 +528,22 @@ CREATE TABLE IF NOT EXISTS `pushes`
 );''')
         self.__conn.execute('''
 CREATE INDEX IF NOT EXISTS
-`index_pushes_id` on `pushes`(`id`);''')
+`index_pushes_id` ON `pushes`(`id`);''')
         self.__conn.execute('''
 CREATE INDEX IF NOT EXISTS
-`index_pushes_post` on `pushes`(`post`);''')
+`index_pushes_post` ON `pushes`(`post`);''')
         self.__conn.execute('''
 CREATE INDEX IF NOT EXISTS
-`index_pushes_type` on `pushes`(`type`);''')
+`index_pushes_type` ON `pushes`(`type`);''')
         self.__conn.execute('''
 CREATE INDEX IF NOT EXISTS
-`index_pushes_author` on `pushes`(`author`);''')
+`index_pushes_author` ON `pushes`(`author`);''')
         self.__conn.execute('''
 CREATE INDEX IF NOT EXISTS
-`index_pushes_ip` on `pushes`(`ip`);''')
+`index_pushes_ip` ON `pushes`(`ip`);''')
         self.__conn.execute('''
 CREATE INDEX IF NOT EXISTS
-`index_pushes_date_time` on `pushes`(`date_time`);''')
+`index_pushes_date_time` ON `pushes`(`date_time`);''')
 
         # table `crawled_posts`
         self.__conn.execute('''
@@ -552,14 +552,17 @@ CREATE TABLE IF NOT EXISTS `crawled_posts`
     `id` INTEGER PRIMARY KEY AUTOINCREMENT,
     `post` INTEGER UNIQUE NOT NULL,
     `date_time` NOT NULL,
-    FOREIGN KEY (post) REFERENCES posts(id)
+    FOREIGN KEY (`post`) REFERENCES `posts`(`id`)
 );''')
         self.__conn.execute('''
 CREATE UNIQUE INDEX IF NOT EXISTS
-`index_crawled_posts_post` on `crawled_posts`(`post`);''')
+`index_crawled_posts_id` ON `crawled_posts`(`id`);''')
         self.__conn.execute('''
 CREATE UNIQUE INDEX IF NOT EXISTS
-`index_crawled_posts_date_time` on `crawled_posts`(`date_time`);''')
+`index_crawled_posts_post` ON `crawled_posts`(`post`);''')
+        self.__conn.execute('''
+CREATE INDEX IF NOT EXISTS
+`index_crawled_posts_date_time` ON `crawled_posts`(`date_time`);''')
 
     def __enter__(self):
         self.__conn = sqlite3.connect(self.__path)

@@ -36,7 +36,7 @@
 | `ip`           | `TEXT`    | `INDEX`                                                      | `223.141.187.205`                                          |
 | `delete_state` | `INTEGER` | `NOT NULL`                                                   | `0`                                                        |
 
-### `post_content`
+### `posts_content`
 
 | Column name | Data Type | Attributes                                                   | Example Value |
 | ----------- | --------- | ------------------------------------------------------------ | ------------- |
@@ -44,7 +44,7 @@
 | `post`      | `INTEGER` | `FOREIGN KEY (posts.id)`<br />`UNIQUE`<br />`NOT NULL`<br />`UNIQUE INDEX` |               |
 | `content`   | `TEXT`    | `NOT NULL`                                                   |               |
 
-### `pushs`
+### `pushes`
 
 | Column name | Data Type | Attributes                                             | Example Value                              |
 | ----------- | --------- | ------------------------------------------------------ | ------------------------------------------ |

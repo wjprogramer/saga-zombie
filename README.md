@@ -10,7 +10,7 @@ pip3 install -r requirements.txt
 
 ## 資料庫架構
 
-[點我](./Database structure.md)
+[點我](./Database%20structure.md)
 
 ## Dev
 

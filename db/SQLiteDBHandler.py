@@ -76,6 +76,7 @@ class SQLiteDBHandler:
         self.__execution_lock = Lock()
         self.__counter_lock = Lock()
         self.__commit_lock = Lock()
+        self.__post_insertion_lock = Lock()
 
     def query(self, q: str):
         return self.__execute_read(q)
@@ -234,7 +235,8 @@ VALUES ( :board );''', {'board': board})
         self.add_user(author)
         self.add_board(board)
 
-        self.__execute_write('''
+        with self.__post_insertion_lock:
+            self.__execute_write('''
 INSERT OR REPLACE INTO `posts`
 (
     `id`,
@@ -276,23 +278,23 @@ VALUES
     :ip,
     :delete_state
 );
-            ''',
-            {
-                'board': board,
-                'index': index,
-                'post_id': post.getID(),
-                'author': author,
-                'date_time': get_post_time(post),
-                'title': post.getTitle(),
-                'web_url': post.getWebUrl(),
-                'money': post.getMoney(),
-                'ip': post.getIP(),
-                'delete_state': delete_status
-            }
-        )
+                ''',
+                {
+                    'board': board,
+                    'index': index,
+                    'post_id': post.getID(),
+                    'author': author,
+                    'date_time': get_post_time(post),
+                    'title': post.getTitle(),
+                    'web_url': post.getWebUrl(),
+                    'money': post.getMoney(),
+                    'ip': post.getIP(),
+                    'delete_state': delete_status
+                }
+            )
 
-        if delete_status == 0:
-            self.__execute_write('''
+            if delete_status == 0:
+                self.__execute_write('''
 INSERT OR REPLACE INTO `posts_content`
 (`id`, `post`, `content`)
 VALUES
@@ -316,16 +318,16 @@ VALUES
     ),
     :content
 );
-                ''',
-                {
-                    'board': board,
-                    'index': index,
-                    'content': post.getContent()
-                }
-            )
+                    ''',
+                    {
+                        'board': board,
+                        'index': index,
+                        'content': post.getContent()
+                    }
+                )
 
-            # delete existing pushes
-            self.__execute_write('''
+                # delete existing pushes
+                self.__execute_write('''
 DELETE FROM `pushes`
 WHERE `post` = (
     SELECT `id` FROM `posts`
@@ -334,17 +336,17 @@ WHERE `post` = (
         WHERE `name` = :board
     ) AND `index` = :index
 );
-                ''',
-                {
-                    'board': board,
-                    'index': index
-                })
+                    ''',
+                    {
+                        'board': board,
+                        'index': index
+                    })
 
-            year = get_post_year(post)
-            for push in post.getPushList():
-                author = push.getAuthor()
-                self.add_user(author)
-                self.__execute_write('''
+                year = get_post_year(post)
+                for push in post.getPushList():
+                    author = push.getAuthor()
+                    self.add_user(author)
+                    self.__execute_write('''
 INSERT INTO `pushes`
 (
     `post`,
@@ -372,18 +374,18 @@ VALUES
     :ip ,
     :date_time
 )
-                    ''',
-                    {
-                        'board': board,
-                        'index': index,
-                        'type': push.getType(),
-                        'author': push.getAuthor(),
-                        'content': push.getContent(),
-                        'ip': push.getIP(),
-                        'date_time': get_push_time(year, push)
-                    })
+                        ''',
+                        {
+                            'board': board,
+                            'index': index,
+                            'type': push.getType(),
+                            'author': push.getAuthor(),
+                            'content': push.getContent(),
+                            'ip': push.getIP(),
+                            'date_time': get_push_time(year, push)
+                        })
 
-        self.__execute_write('''
+            self.__execute_write('''
 INSERT OR REPLACE INTO `crawled_posts`
 (`id`, `post`, `date_time`)
 VALUES
@@ -407,12 +409,12 @@ VALUES
     ),
     :date_time
 );
-            ''',
-            {
-                'board': board,
-                'index': index,
-                'date_time': get_current_time()
-            })
+                ''',
+                {
+                    'board': board,
+                    'index': index,
+                    'date_time': get_current_time()
+                })
 
     def __execute_read(self, *args, **kwargs):
         with self.__execution_lock:

@@ -1,7 +1,3 @@
-"""
-123
-"""
-
 from threading import Lock
 import sqlite3
 import time
@@ -75,18 +71,13 @@ get_post_author_id.pattern = re.compile('^([a-zA-Z0-9]*)')
 
 
 class SQLiteDBHandler:
-    """
-    123
-    """
-
-    def __init__(self, path):
+    def __init__(self, path, max_op_count: int = 10000):
         self.__path = path
         self.__conn = None
-        self.__max_op_count = 10000
+        self.__max_op_count = max_op_count
         self.__op_count = 0
         self.__execution_lock = Lock()
         self.__counter_lock = Lock()
-        self.__commit_lock = Lock()
         self.__post_insertion_lock = Lock()
 
     def query(self, query: str):
@@ -103,80 +94,78 @@ class SQLiteDBHandler:
             return self.__execute_read('SELECT * FROM `posts`;')
         return self.__execute_read(
             'SELECT * FROM `posts` WHERE `date_time` >= :after ;',
-            { 'after': after })
+            {'after': after})
 
     def get_pushes(self, after: int=0):
         if after == 0:
             return self.__execute_read('SELECT * FROM `pushes`;')
         return self.__execute_read(
             'SELECT * FROM `pushes` WHERE `date_time` >= :after ;',
-            { 'after': after })
+            {'after': after})
 
     def get_board_id(self, board: str) -> int:
         return self.__execute_read(
             'SELECT `id` FROM `boards` WHERE `name` = :board ;',
-            { 'name': board }
+            {'name': board}
         )
 
     def get_user_id(self, username: str) -> int:
         return self.__execute_read(
             'SELECT `id` FROM `users` WHERE `username` = :username ;',
-            { 'username': username }
+            {'username': username}
         )
 
     def get_post(self, post_id):
         return self.__execute_read(
             'SELECT * FROM `posts` WHERE `post_id` = :post_id ;',
-            { 'post_id': post_id }
+            {'post_id': post_id}
         )
 
     def get_post_pushes(self, post_id):
         return self.__execute_read('''
-SELECT * FROM `pushes`
-WHERE `post` = (
-    SELECT `id` FROM `posts`
-    WHERE `post_id` = :post_id
+SELECT * FROM `pushes` WHERE `post` = (
+    SELECT `id` FROM `posts` WHERE `post_id` = :post_id
 );
-        ''', { 'post_id': post_id })
+        ''', {'post_id': post_id})
 
-    def get_posts_by_user_id(self, user_id: int, after: int=0):
+    def get_posts_by_user_id(self, user_id: int, after: int = 0):
         if after == 0:
             return self.__execute_read(
                 'SELECT * FROM `posts` WHERE `author` = :user_id ;',
-                { 'user_id': user_id }
+                {'user_id': user_id}
             )
         return self.__execute_read(
             'SELECT * FROM `posts` WHERE `author` = :user_id AND `date_time` >= :after ;',
-            { 'user_id': user_id, 'after': after }
+            {'user_id': user_id, 'after': after}
         )
 
-    def get_posts_by_username(self, username: str, after: int=0):
+    def get_posts_by_username(self, username: str, after: int = 0):
         if after == 0:
             return self.__execute_read('''
 SELECT * FROM `posts`
 WHERE `author` = (
     SELECT `id` FROM `users`
     WHERE `username` = :username
-);''', { 'username': username })
+);''', {'username': username})
         return self.__execute_read('''
 SELECT * FROM `posts`
 WHERE `author` = (
     SELECT `id` FROM `users`
     WHERE `username` = :username
-) AND `date_time` >= :after ;''', { 'username': username, 'after': after })
+) AND `date_time` >= :after ;''', {'username': username, 'after': after})
 
     def get_posts_by_ip(self, ip: str):
-        return self.__execute_read('SELECT * FROM `posts` WHERE `ip` = :ip ;', { 'ip': ip })
+        return self.__execute_read('SELECT * FROM `posts` WHERE `ip` = :ip ;', {'ip': ip})
 
-    def get_pushes_by_user_id(self, user_id: int, after: int=0):
+    def get_pushes_by_user_id(self, user_id: int, after: int = 0):
         if after == 0:
             return self.__execute_read(
                 'SELECT * FROM `pushes` WHERE `author` = :user_id ;',
-                { 'user_id': user_id }
+                {'user_id': user_id}
             )
         return self.__execute_read(
             'SELECT * FROM `pushes` WHERE `author` = :user_id AND `date_time` > :after ;',
-            { 'user_id': user_id, 'after': after }
+            {'user_id': user_id, 'after': after}
         )
 
     def get_pushes_by_username(self, username: str, after: int=0):
@@ -186,16 +175,16 @@ SELECT * FROM `pushes`
 WHERE `author` = (
     SELECT `id` FROM `users`
     WHERE `username` = :username
-);''', { 'username': username })
+);''', {'username': username})
         return self.__execute_read('''
 SELECT * FROM `pushes`
 WHERE `author` = (
     SELECT `id` FROM `users`
     WHERE `username` = :username
-) AND `date_time` >= :after ;''', { 'username': username, 'after': after })
+) AND `date_time` >= :after ;''', {'username': username, 'after': after})
 
     def get_pushes_by_ip(self, ip: str):
-        return self.__execute_read('SELECT * FROM `pushes` WHERE `ip` = :ip ;', { 'ip': ip })
+        return self.__execute_read('SELECT * FROM `pushes` WHERE `ip` = :ip ;', {'ip': ip})
 
     def add_user(self, user: str):
         try:
@@ -306,7 +295,7 @@ WHERE `post` = (
     SELECT `id` FROM `posts`
     WHERE `post_id` = :post_id
 );
-                    ''', { 'post_id': post_id })
+                    ''', {'post_id': post_id})
 
                 year = get_post_year(post)
                 for push in post.getPushList():
@@ -388,7 +377,7 @@ VALUES
                 self.__op_count = 0
 
     def __commit_now(self):
-        with self.__commit_lock:
+        with self.__execution_lock:
             self.__conn.commit()
 
     def __create_tables(self):

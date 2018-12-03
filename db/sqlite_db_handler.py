@@ -79,6 +79,7 @@ class SQLiteDBHandler:
         self.__execution_lock = Lock()
         self.__counter_lock = Lock()
         self.__post_insertion_lock = Lock()
+        self.__db_opening = False
 
     def query(self, query: str):
         return self.__execute_read(query)
@@ -507,13 +508,25 @@ CREATE UNIQUE INDEX IF NOT EXISTS
 CREATE INDEX IF NOT EXISTS
 `index_crawled_posts_date_time` ON `crawled_posts`(`date_time`);''')
 
+    def connect(self):
+        return self.__enter__() is not None
+
+    def close(self):
+        self.__exit__(0, 0, 0)
+
     def __enter__(self):
-        self.__conn = sqlite3.connect(self.__path)
-        # enables foreign key constraint support
-        self.__conn.execute('PRAGMA foreign_key = ON;')
-        self.__create_tables()
-        return self
+        with self.__execution_lock:
+            if not self.__db_opening:
+                self.__conn = sqlite3.connect(self.__path)
+                self.__db_opening = True
+                # enables foreign key constraint support
+                self.__conn.execute('PRAGMA foreign_key = ON;')
+                self.__create_tables()
+                return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self.__conn.commit()
-        self.__conn.close()
+        with self.__execution_lock:
+            if self.__db_opening:
+                self.__conn.commit()
+                self.__conn.close()
+                self.__db_opening = False

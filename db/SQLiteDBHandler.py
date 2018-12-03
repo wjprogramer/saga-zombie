@@ -113,41 +113,20 @@ class SQLiteDBHandler:
             { 'username': username }
         )
 
-    def get_post(self, board, index: int):
-        if isinstance(board, int):
-            return self.__execute_read(
-                'SELECT * FROM `posts` WHERE `board` = :board AND `index` = :index ;',
-                { 'board': board, 'index': index }
-            )
-        return self.__execute_read('''
-SELECT * FROM `posts`
-WHERE `board` = (
-    SELECT `id` FROM `boards`
-    WHERE `name` = :board
-) AND `index` = :index ;''',
-            { 'board': board, 'index': index}
+    def get_post(self, post_id):
+        return self.__execute_read(
+            'SELECT * FROM `posts` WHERE `post_id` = :post_id ;',
+            { 'post_id': post_id }
         )
 
-    def get_post_pushes(self, board, index: int):
-        if isinstance(board, int):
-            return self.__execute_read('''
-SELECT * FROM `pushes`
-WHERE `post` = (
-    SELECT `id` FROM `posts`
-    WHERE `board` = :board
-        AND `index` = :index
-);
-            ''', { 'board': board, 'index': index })
+    def get_post_pushes(self, post_id):
         return self.__execute_read('''
 SELECT * FROM `pushes`
 WHERE `post` = (
     SELECT `id` FROM `posts`
-    WHERE `board` = (
-        SELECT `id` FROM `boards`
-        WHERE `name` = :board
-    ) AND `index` = :index
+    WHERE `post_id` = :post_id
 );
-        ''', { 'board': board, 'index': index })
+        ''', { 'post_id': post_id })
 
     def get_posts_by_user_id(self, user_id: int, after: int=0):
         if after == 0:
@@ -223,10 +202,8 @@ VALUES ( :board );''', {'board': board})
         except:
             pass
 
-    def insert_or_update_post(self, post: PostInformation, index: int):
-        if post is None or index is None:
-            return
-        if post.getDeleteStatus == ErrorCode.PostDeleted:
+    def insert_or_update_post(self, post: PostInformation):
+        if post is None:
             return
 
         author = get_post_author_id(post)
@@ -236,36 +213,32 @@ VALUES ( :board );''', {'board': board})
         self.add_board(board)
 
         with self.__post_insertion_lock:
-            self.__execute_write('''
+            if delete_status == 0:
+                post_id = post.getID()
+
+                self.__execute_write('''
 INSERT OR REPLACE INTO `posts`
 (
     `id`,
     `board`,
-    `index`,
     `post_id`,
     `author`,
     `date_time`,
     `title`,
     `web_url`,
     `money`,
-    `ip`,
-    `delete_state`
+    `ip`
 )
 VALUES
 (
     (
         SELECT `id` FROM `posts`
-        WHERE `board` = (
-                SELECT `id` FROM `boards`
-                WHERE `name` = :board
-            )
-            AND `index` = :index
+        WHERE `post_id` = :post_id
     ),
     (
         SELECT `id` FROM `boards`
         WHERE `name` = :board
     ),
-    :index,
     :post_id,
     (
         SELECT `id` FROM `users`
@@ -275,25 +248,21 @@ VALUES
     :title,
     :web_url,
     :money,
-    :ip,
-    :delete_state
+    :ip
 );
-                ''',
-                {
-                    'board': board,
-                    'index': index,
-                    'post_id': post.getID(),
-                    'author': author,
-                    'date_time': get_post_time(post),
-                    'title': post.getTitle(),
-                    'web_url': post.getWebUrl(),
-                    'money': post.getMoney(),
-                    'ip': post.getIP(),
-                    'delete_state': delete_status
-                }
-            )
+                    ''',
+                    {
+                        'board': board,
+                        'post_id': post_id,
+                        'author': author,
+                        'date_time': get_post_time(post),
+                        'title': post.getTitle(),
+                        'web_url': post.getWebUrl(),
+                        'money': post.getMoney(),
+                        'ip': post.getIP()
+                    }
+                )
 
-            if delete_status == 0:
                 self.__execute_write('''
 INSERT OR REPLACE INTO `posts_content`
 (`id`, `post`, `content`)
@@ -303,25 +272,18 @@ VALUES
         SELECT `id` FROM `posts_content`
         WHERE `post` = (
             SELECT `id` FROM `posts`
-            WHERE `board` = (
-                SELECT `id` FROM `boards`
-                WHERE `name` = :board
-            ) AND `index` = :index
+            WHERE `post_id` = :post_id
         )
     ),
     (
         SELECT `id` FROM `posts`
-        WHERE `board` = (
-            SELECT `id` FROM `boards`
-            WHERE `name` = :board
-        ) AND `index` = :index
+        WHERE `post_id` = :post_id
     ),
     :content
 );
                     ''',
                     {
-                        'board': board,
-                        'index': index,
+                        'post_id': post_id,
                         'content': post.getContent()
                     }
                 )
@@ -331,16 +293,9 @@ VALUES
 DELETE FROM `pushes`
 WHERE `post` = (
     SELECT `id` FROM `posts`
-    WHERE `board` = (
-        SELECT `id` FROM `boards`
-        WHERE `name` = :board
-    ) AND `index` = :index
+    WHERE `post_id` = :post_id
 );
-                    ''',
-                    {
-                        'board': board,
-                        'index': index
-                    })
+                    ''', { 'post_id': post_id })
 
                 year = get_post_year(post)
                 for push in post.getPushList():
@@ -360,10 +315,7 @@ VALUES
 (
     (
         SELECT `id` FROM `posts`
-        WHERE `board` = (
-            SELECT `id` FROM `boards`
-            WHERE `name` = :board
-        ) AND `index` = :index
+        WHERE `post_id` = :post_id
     ),
     :type ,
     (
@@ -376,8 +328,7 @@ VALUES
 )
                         ''',
                         {
-                            'board': board,
-                            'index': index,
+                            'post_id': post_id,
                             'type': push.getType(),
                             'author': push.getAuthor(),
                             'content': push.getContent(),
@@ -394,25 +345,18 @@ VALUES
         SELECT `id` FROM `crawled_posts`
         WHERE `post` = (
             SELECT `id` FROM `posts`
-            WHERE `board` = (
-                SELECT `id` FROM `boards`
-                WHERE `name` = :board
-            ) AND `index` = :index
+            WHERE `post_id` = :post_id
         )
     ),
     (
         SELECT `id` FROM `posts`
-        WHERE `board` = (
-            SELECT `id` FROM `boards`
-            WHERE `name` = :board
-        ) AND `index` = :index
+        WHERE `post_id` = :post_id
     ),
     :date_time
 );
                 ''',
                 {
-                    'board': board,
-                    'index': index,
+                    'post_id': post_id,
                     'date_time': get_current_time()
                 })
 
@@ -471,7 +415,6 @@ CREATE TABLE IF NOT EXISTS `posts`
 (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT,
     `board` INTEGER NOT NULL,
-    `index` INTEGER NOT NULL,
     `post_id` TEXT UNIQUE,
     `author` INTEGER NOT NULL,
     `date_time` INTEGER,
@@ -479,8 +422,6 @@ CREATE TABLE IF NOT EXISTS `posts`
     `web_url` TEXT,
     `money` INTEGER,
     `ip` TEXT,
-    `delete_state` INTEGER NOT NULL,
-    UNIQUE (`board`, `index`),
     FOREIGN KEY (board) REFERENCES board(id),
     FOREIGN KEY (author) REFERENCES users(id)
 );''')

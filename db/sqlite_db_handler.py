@@ -1,15 +1,19 @@
-from PTTLibrary.Information import PostInformation
-from PTTLibrary.Information import PushInformation
-from PTTLibrary.PTT import ErrorCode
+"""
+123
+"""
+
 from threading import Lock
 import sqlite3
 import time
 import re
 
+from PTTLibrary.Information import PostInformation
+from PTTLibrary.Information import PushInformation
 
-base_time = -int(time.mktime(time.strptime('', '')))
-ptt_time_zone_offset = 28800
-current_time_zone_offset = \
+
+BASE_TIME = -int(time.mktime(time.strptime('', '')))
+PTT_TIME_ZONE_OFFSET = 28800
+CURRENT_TIME_ZONE_OFFSET = \
     int(time.mktime(time.localtime())) - \
     int(time.mktime(time.gmtime()))
 
@@ -27,7 +31,7 @@ def get_post_time(post: PostInformation) -> int:
                     '%a %b %d %H:%M:%S %Y'
                 )
             )
-        ) - current_time_zone_offset + ptt_time_zone_offset
+        ) - CURRENT_TIME_ZONE_OFFSET + PTT_TIME_ZONE_OFFSET
     except:
         return 0
 
@@ -41,7 +45,7 @@ def get_post_year(post: PostInformation) -> int:
                     '%Y'
                 )
             )
-        ) - current_time_zone_offset + ptt_time_zone_offset
+        ) - CURRENT_TIME_ZONE_OFFSET + PTT_TIME_ZONE_OFFSET
     except:
         return 0
 
@@ -55,7 +59,7 @@ def get_push_time(year: int, push: PushInformation):
                     '%m/%d %H:%M'
                 )
             )
-        ) + base_time + year - current_time_zone_offset + ptt_time_zone_offset
+        ) + BASE_TIME + year - CURRENT_TIME_ZONE_OFFSET + PTT_TIME_ZONE_OFFSET
     except:
         return year
 
@@ -65,12 +69,19 @@ def get_post_author_id(post: PostInformation) -> str:
         return get_post_author_id.pattern.match(post.getAuthor().strip()).group(1)
     except:
         return ''
+
+
 get_post_author_id.pattern = re.compile('^([a-zA-Z0-9]*)')
 
 
 class SQLiteDBHandler:
+    """
+    123
+    """
+
     def __init__(self, path):
         self.__path = path
+        self.__conn = None
         self.__max_op_count = 10000
         self.__op_count = 0
         self.__execution_lock = Lock()
@@ -78,8 +89,8 @@ class SQLiteDBHandler:
         self.__commit_lock = Lock()
         self.__post_insertion_lock = Lock()
 
-    def query(self, q: str):
-        return self.__execute_read(q)
+    def query(self, query: str):
+        return self.__execute_read(query)
 
     def get_boards(self):
         return self.__execute_read('SELECT * FROM `boards`;')
@@ -191,7 +202,7 @@ WHERE `author` = (
             self.__execute_write('''
 INSERT INTO `users` (`username`)
 VALUES ( :user );''', {'user': user})
-        except:
+        except sqlite3.IntegrityError:
             pass
 
     def add_board(self, board: str):
@@ -199,7 +210,7 @@ VALUES ( :user );''', {'user': user})
             self.__execute_write('''
 INSERT INTO `boards` (`name`)
 VALUES ( :board );''', {'board': board})
-        except:
+        except sqlite3.IntegrityError:
             pass
 
     def insert_or_update_post(self, post: PostInformation):
@@ -212,8 +223,8 @@ VALUES ( :board );''', {'board': board})
         self.add_user(author)
         self.add_board(board)
 
-        with self.__post_insertion_lock:
-            if delete_status == 0:
+        if delete_status == 0:
+            with self.__post_insertion_lock:
                 post_id = post.getID()
 
                 self.__execute_write('''
@@ -326,17 +337,17 @@ VALUES
     :ip ,
     :date_time
 )
-                        ''',
-                        {
-                            'post_id': post_id,
-                            'type': push.getType(),
-                            'author': push.getAuthor(),
-                            'content': push.getContent(),
-                            'ip': push.getIP(),
-                            'date_time': get_push_time(year, push)
-                        })
+                    ''',
+                    {
+                        'post_id': post_id,
+                        'type': push.getType(),
+                        'author': push.getAuthor(),
+                        'content': push.getContent(),
+                        'ip': push.getIP(),
+                        'date_time': get_push_time(year, push)
+                    })
 
-            self.__execute_write('''
+                self.__execute_write('''
 INSERT OR REPLACE INTO `crawled_posts`
 (`id`, `post`, `date_time`)
 VALUES

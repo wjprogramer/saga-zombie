@@ -22,6 +22,7 @@ class SQLiteDBHandler:
         self.__op_count = 0
         self.__execution_lock = Lock()
         self.__counter_lock = Lock()
+        self.__commitment_lock = Lock()
         self.__post_insertion_lock = Lock()
         self.__db_opening = False
 
@@ -322,7 +323,7 @@ VALUES
                 self.__op_count = 0
 
     def __commit_now(self):
-        with self.__execution_lock:
+        with self.__commitment_lock:
             self.__conn.commit()
 
     def __create_tables(self):

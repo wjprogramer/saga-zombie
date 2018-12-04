@@ -34,7 +34,7 @@ def get_current_time() -> int:
 
 def get_post_time(post: PostInformation) -> int:
     """
-    return the release time of the post
+    return the release time of the post (unix time)
     """
     try:
         return int(
@@ -50,6 +50,10 @@ def get_post_time(post: PostInformation) -> int:
 
 
 def get_post_year(post: PostInformation) -> int:
+    """
+    return the year of the post, ex. 2020
+    """
+
     try:
         return int(
             time.mktime(
@@ -64,6 +68,10 @@ def get_post_year(post: PostInformation) -> int:
 
 
 def get_push_time(year: int, push: PushInformation):
+    """
+    return the timestamp fo the push (unix time)
+    """
+
     try:
         return int(
             time.mktime(
@@ -78,6 +86,10 @@ def get_push_time(year: int, push: PushInformation):
 
 
 def get_post_author_id(post: PostInformation) -> str:
+    """
+    return the author id of the post
+    """
+
     try:
         return get_post_author_id.pattern.match(post.getAuthor().strip()).group(1)
     except:

@@ -14,7 +14,7 @@ CONFIG_KEYS = {
 
 def check_crawler_configs(configs):
     for config in configs:
-        for k, v in CONFIG_KEYS:
+        for k, v in CONFIG_KEYS.items():
             if k not in config:
                 eprint('key [' + k + '] not in crawler config')
                 exit(1)
@@ -29,7 +29,7 @@ def check_crawler_configs(configs):
             exit(1)
 
 
-def make_crawler_config_object(configs, db):
+def make_crawler_config_objects(configs, db):
     result = list()
     for config in configs:
         result.append(Configs(
@@ -45,6 +45,10 @@ def make_crawler_config_object(configs, db):
 
 
 class Configs:
+    """
+    crawler configs object
+    """
+
     def __init__(self, board, time_start, time_end, period, username, password, db):
         self.__board = board
         self.__time_start = time_start

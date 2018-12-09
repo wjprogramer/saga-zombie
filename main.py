@@ -30,7 +30,7 @@ def check_config(configs):
 
 
 if __name__ == '__main__':
-    CONFIG_FILE_PATH = './config.json'
+    CONFIG_FILE_PATH = './configs/config.json'
     with open(CONFIG_FILE_PATH) as config_file:
         CONFIGS = json.load(config_file)
     check_config(CONFIGS)

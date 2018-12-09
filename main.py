@@ -22,8 +22,8 @@ def check_config(configs):
         eprint('"database" was not set in', CONFIG_FILE_PATH)
         exit(1)
     check_db_config(configs['database'])
-    if 'crawlers' in configs and len(configs['crawlers']) > 0:
-        check_crawler_configs(configs['crawlers'])
+    if 'crawler' in configs and len(configs['crawler']) > 0:
+        check_crawler_configs(configs['crawler'])
     else:
         print('crawler not set')
 
@@ -42,12 +42,9 @@ if __name__ == '__main__':
         eprint('error when connecting to the database')
         exit(1)
 
-    crawler_configs = make_crawler_config_objects(CONFIGS['crawlers'], db)
-    crawlers = list()
-    for config in crawler_configs:
-        crawler = Crawler(config)
-        crawler.start_in_new_thread()
-        crawlers.append(crawler)
+    crawler_configs = make_crawler_config_objects(CONFIGS['crawler'], db)
+    crawler = Crawler(crawler_configs)
+    crawler.start_in_new_thread()
 
     # start running
     httpd = HTTPServer(db)

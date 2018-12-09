@@ -132,21 +132,80 @@ WHERE `author` = (
     def get_pushes_by_ip(self, ip: str):
         return self.__execute_read('SELECT * FROM `pushes` WHERE `ip` = :ip ;', {'ip': ip})
 
+    def get_time_range_last_crawled(self, board, time_begin, time_end):
+        return self.__execute_read('''
+SELECT COALESCE (
+    (
+        SELECT `date_time` FROM `crawled_time_range`
+        WHERE `board` = (
+            SELECT `id` FROM `boards`
+            WHERE `name` = :board
+        ) and `time_begin` = :time_begin and `time_end` = :time_end
+    ), 0
+);
+            ''',
+            {
+                'board': board,
+                'time_begin': time_begin,
+                'time_end': time_end
+            })[0][0]
+
+    def set_time_range_crawled(self, board, time_begin, time_end):
+        self.__execute_write('''
+INSERT OR REPLACE INTO `crawled_time_range`
+(`id`, `board`, `time_begin`, `time_end`, `date_time`)
+VALUES
+(
+    (
+        SELECT `id` FROM `crawled_time_range`
+        WHERE `board` = (
+            SELECT `id` FROM `boards`
+            WHERE `name` = :board
+        ) AND
+        `time_begin` = :time_begin AND
+        `time_end` = :time_end
+    ),
+    (
+        SELECT `id` FROM `boards`
+        WHERE `name` = :board
+    ),
+    :time_begin,
+    :time_end,
+    :date_time
+);
+            ''',
+            {
+                'board': board,
+                'time_begin': time_begin,
+                'time_end': time_end,
+                'date_time': get_current_time()
+            })
+
     def add_user(self, user: str):
-        try:
-            self.__execute_write('''
-INSERT INTO `users` (`username`)
-VALUES ( :user );''', {'user': user})
-        except sqlite3.IntegrityError:
-            pass
+        self.__execute_write('''
+INSERT OR REPLACE INTO `users`
+(`id`, `username`)
+VALUES
+(
+    (
+        SELECT `id` FROM `users`
+        WHERE `username` = :user
+    ),
+    :user
+);''', {'user': user})
 
     def add_board(self, board: str):
-        try:
-            self.__execute_write('''
-INSERT INTO `boards` (`name`)
-VALUES ( :board );''', {'board': board})
-        except sqlite3.IntegrityError:
-            pass
+        self.__execute_write('''
+INSERT OR REPLACE INTO `boards`
+(`id`, `name`)
+VALUES
+(
+    (
+        SELECT `id` FROM `boards`
+        WHERE `name` = :board
+    ),
+    :board
+);''', {'board': board})
 
     def insert_or_update_post(self, post: PostInformation):
         if post is None:
@@ -361,7 +420,7 @@ CREATE TABLE IF NOT EXISTS `posts`
 (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT,
     `board` INTEGER NOT NULL,
-    `post_id` TEXT UNIQUE,
+    `post_id` TEXT UNIQUE NOT NULL,
     `author` INTEGER NOT NULL,
     `date_time` INTEGER,
     `title` TEXT,
@@ -453,7 +512,35 @@ CREATE UNIQUE INDEX IF NOT EXISTS
 CREATE INDEX IF NOT EXISTS
 `index_crawled_posts_date_time` ON `crawled_posts`(`date_time`);''')
 
-    def connected(self):
+        # table `crawled_time_range`
+        self.__conn.execute('''
+CREATE TABLE IF NOT EXISTS `crawled_time_range`
+(
+    `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+    `board` INTEGER NOT NULL,
+    `time_begin` INTEGER NOT NULL,
+    `time_end` INTEGER NOT NULL,
+    `date_time` NOT NULL,
+    UNIQUE (`board`, `time_begin`, `time_end`) ON CONFLICT REPLACE,
+    FOREIGN KEY (`board`) REFERENCES `posts`(`id`)
+);''')
+        self.__conn.execute('''
+CREATE UNIQUE INDEX IF NOT EXISTS
+`index_crawled_time_range_id` ON `crawled_time_range`(`id`);''')
+        self.__conn.execute('''
+CREATE INDEX IF NOT EXISTS
+`index_crawled_time_range_board` ON `crawled_time_range`(`board`);''')
+        self.__conn.execute('''
+CREATE INDEX IF NOT EXISTS
+`index_crawled_time_range_time_begin` ON `crawled_time_range`(`time_begin`);''')
+        self.__conn.execute('''
+CREATE INDEX IF NOT EXISTS
+`index_crawled_time_range_time_end` ON `crawled_time_range`(`time_end`);''')
+        self.__conn.execute('''
+CREATE INDEX IF NOT EXISTS
+`index_crawled_time_range_date_time` ON `crawled_time_range`(`date_time`);''')
+
+    def connected(self) -> bool:
         return self.__enter__() is not None
 
     def close(self):

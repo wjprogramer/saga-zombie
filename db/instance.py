@@ -1,6 +1,6 @@
 
 from utils import eprint
-from . import sqlite_db_handler
+from db import sqlite_db_handler
 
 def make_db_instance(configs):
     if configs['type'] == 'sqlite':

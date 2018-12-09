@@ -22,23 +22,23 @@ class Module(BaseModule):
             return
 
         query_result = self.db_handler.query('''
-SELECT `board`, `users`.`username`, `date_time`, `title`, `web_url`, `money`, `ip`
+SELECT `boards`.`name`, `users`.`username`, `date_time`, `title`, `web_url`, `money`, `ip` FROM `posts`
 LEFT JOIN `users` ON `posts`.`author` = `users`.`id`
+LEFT JOIN `boards` ON `posts`.`board` = `boards`.`id`
 WHERE `posts`.`post_id` = :post_id ;''', {'post_id': post_id})
-
 
         if len(query_result) > 0:
             self.send_status_code(200)
             self.send_header(BaseModule.CONTENT_TYPE, BaseModule.CONTENT_TYPE_JSON)
             self.end_headers()
             self.write(json.dumps({
-                'board': query_result[0],
-                'author': query_result[1],
-                'date_time': query_result[2],
-                'title': query_result[3],
-                'web_url': query_result[4],
-                'money': query_result[5],
-                'ip': query_result[6]
+                'board': query_result[0][0],
+                'author': query_result[0][1],
+                'date_time': query_result[0][2],
+                'title': query_result[0][3],
+                'web_url': query_result[0][4],
+                'money': query_result[0][5],
+                'ip': query_result[0][6]
             }))
         else:
             self.send_status_code(404)

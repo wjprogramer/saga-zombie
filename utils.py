@@ -32,6 +32,13 @@ def get_current_time() -> int:
     return int(time.time())
 
 
+def get_current_time_str() -> str:
+    """return time.strftime('%Y%m%d-%H%M%S')
+    """
+
+    return time.strftime('%Y%m%d-%H%M%S')
+
+
 def get_post_time(post: PostInformation) -> int:
     """
     return the release time of the post (unix time)

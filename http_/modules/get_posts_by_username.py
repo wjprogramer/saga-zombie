@@ -1,4 +1,4 @@
-"""get_post_by_user module
+"""get_posts_by_username module
 """
 
 import json
@@ -6,10 +6,14 @@ import json
 from http_.base_module import BaseModule
 
 class Module(BaseModule):
+    """get_posts_by_username module
+    """
 
     def handle(self):
-        print(self.query)
-        if 'username' not in self.query or len(self.query['username']) < 1:
+
+        username = self.get_param('username')
+
+        if username is None:
             self.send_status_code(400)
             self.send_header(BaseModule.CONTENT_TYPE, BaseModule.CONTENT_TYPE_JSON)
             self.write(json.dumps({
@@ -17,7 +21,7 @@ class Module(BaseModule):
                 'info': 'missing parameters'
             }))
             return
-        username = self.query['username'][0]
+
         posts = self.db_handler.get_posts_by_username(username)
         kw_posts = list()
         for post in posts:

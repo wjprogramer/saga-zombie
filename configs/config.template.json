@@ -1,0 +1,35 @@
+{
+    "database": {
+        "type": "sqlite",
+        "path": "./data/data.db"
+    },
+    "crawlers": [
+        {
+            "username": "aaa",
+            "password": "bbb",
+            "board": "Gossiping",
+            "time_start": 86400,
+            "time_end": 0,
+            "period": 3600
+        },
+        {
+            "username": "aaa",
+            "password": "bbb",
+            "board": "Gossiping",
+            "time_start": 2419200,
+            "time_end": 604800,
+            "period": 604800
+        },
+        {
+            "username": "aaa",
+            "password": "bbb",
+            "board": "Gossiping",
+            "time_start": 864000000,
+            "time_end": 2419200,
+            "period": 2419200
+        }
+    ],
+    "http": {
+        "port": 8080
+    }
+}

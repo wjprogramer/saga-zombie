@@ -5,7 +5,7 @@ from . import sqlite_db_handler
 def make_db_instance(configs):
     if configs['type'] == 'sqlite':
         try:
-            with open(configs['path'], 'w'):
+            with open(configs['path'], 'a'):
                 pass
         except IOError:
             eprint('could not read or write', configs['path'])

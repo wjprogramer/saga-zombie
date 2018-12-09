@@ -26,8 +26,8 @@ class Module(BaseModule):
             return
 
         pushes_query_result = self.db_handler.query('''
-SELECT `posts`.`id`, `type`, `content`, `ip`, `date_time` FROM `pushes`
-WHERE `username` = (
+SELECT `post`, `type`, `content`, `ip`, `date_time` FROM `pushes`
+WHERE `author` = (
     SELECT `id` FROM `users` WHERE `username` = :username
 ) AND `date_time` BETWEEN :time_begin AND :time_end ;''', {
     'username': username,
@@ -36,10 +36,10 @@ WHERE `username` = (
 })
 
         posts_query_result = self.db_handler.query('''
-SELECT `posts`.`id`, `posts`.`post_id` FROM `posts`
+SELECT `id`, `post_id` FROM `posts`
 WHERE `id` IN (
     SELECT `post` FROM `pushes`
-    WHERE `username` = (
+    WHERE `author` = (
         SELECT `id` FROM `users` WHERE `username` = :username
     ) AND `date_time` BETWEEN :time_begin AND :time_end
 );''', {
@@ -63,7 +63,7 @@ WHERE `id` IN (
             }))
 
         kw_result = dict()
-        for k, v in pushes:
+        for k, v in pushes.items():
             kw_result[id_to_post_id[k]] = v
 
         self.send_status_code(200)

@@ -9,21 +9,33 @@
         "ranges": [
             {
                 "board": "Gossiping",
-                "time_begin": 86400,
+                "time_begin": 3600,
                 "time_end": 0,
+                "period": 300
+            },
+            {
+                "board": "Gossiping",
+                "time_begin": 86400,
+                "time_end": 3600,
+                "period": 1200
+            },
+            {
+                "board": "Gossiping",
+                "time_begin": 604800,
+                "time_end": 86400,
                 "period": 3600
             },
             {
                 "board": "Gossiping",
                 "time_begin": 2419200,
                 "time_end": 604800,
-                "period": 604800
+                "period": 86400
             },
             {
                 "board": "Gossiping",
                 "time_begin": 864000000,
                 "time_end": 2419200,
-                "period": 2419200
+                "period": 604800
             }
         ]
     },

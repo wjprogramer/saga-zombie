@@ -3,6 +3,7 @@ crawler module
 """
 
 import time
+import threading
 
 from PTTLibrary import PTT
 from . import configs
@@ -148,3 +149,5 @@ class Crawler:
         """
         start crawling in a new thread
         """
+
+        threading.Thread(target=self.start).start()

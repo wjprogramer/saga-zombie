@@ -7,6 +7,7 @@ from urllib.parse import parse_qs
 import time
 
 from db.sqlite_db_handler import SQLiteDBHandler
+from utils import get_current_time_str
 
 class BaseModule:
     """base module
@@ -24,7 +25,22 @@ class BaseModule:
         self.path = parsed_result.path
         self.query = parse_qs(parsed_result.query)
 
+        print(
+            '[' + get_current_time_str() + ']',
+            self.request_handler.client_address,
+            self.request_handler.path)
+
         self.handle()
+
+    def get_param(self, keyword: str, default=None):
+        """get the value of the keyword in the query
+        if the keyword exist,
+        else return the default value
+        """
+
+        if keyword in self.query and len(self.query[keyword]) >= 1:
+            return self.query[keyword][0]
+        return default
 
     def send_status_code(self, code: int):
         """send status code to client

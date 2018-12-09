@@ -26,8 +26,8 @@ class SQLiteDBHandler:
         self.__post_insertion_lock = Lock()
         self.__db_opening = False
 
-    def query(self, query: str):
-        return self.__execute_read(query)
+    def query(self, query: str, *args, **kwargs):
+        return self.__execute_read(query, *args, **kwargs)
 
     def get_boards(self):
         return self.__execute_read('SELECT * FROM `boards`;')

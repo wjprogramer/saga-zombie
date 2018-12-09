@@ -18,7 +18,6 @@ from http_.server import HTTPServer
 
 
 def check_config(configs):
-    print(configs)
     if 'database' not in configs:
         eprint('"database" was not set in', CONFIG_FILE_PATH)
         exit(1)

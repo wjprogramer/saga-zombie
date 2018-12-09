@@ -144,7 +144,7 @@ class Crawler:
                     period = range_.get_period()
 
                     last_time = self.__db.get_time_range_last_crawled(board, time_begin, time_end)
-                    
+
                     if current - last_time < period:
                         continue
 

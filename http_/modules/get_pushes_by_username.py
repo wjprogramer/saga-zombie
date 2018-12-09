@@ -4,6 +4,7 @@
 import json
 
 from http_.base_module import BaseModule
+from utils import get_current_time
 
 class Module(BaseModule):
     """get_pushes_by_username module
@@ -11,6 +12,7 @@ class Module(BaseModule):
 
     def handle(self):
         username = self.get_param('username')
+        current = get_current_time()
         time_begin = self.get_param('time_begin', 604800)
         time_end = self.get_param('time_end', 0)
 
@@ -27,7 +29,11 @@ class Module(BaseModule):
 SELECT `posts`.`id`, `type`, `content`, `ip`, `date_time` FROM `pushes`
 WHERE `username` = (
     SELECT `id` FROM `users` WHERE `username` = :username
-) AND `date_time` BETWEEN :time_begin AND :time_end ;''')
+) AND `date_time` BETWEEN :time_begin AND :time_end ;''', {
+    'username': username,
+    'time_begin': current - time_begin,
+    'time_end': current - time_end
+})
 
         posts_query_result = self.db_handler.query('''
 SELECT `posts`.`id`, `posts`.`post_id` FROM `posts`
@@ -36,7 +42,11 @@ WHERE `id` IN (
     WHERE `username` = (
         SELECT `id` FROM `users` WHERE `username` = :username
     ) AND `date_time` BETWEEN :time_begin AND :time_end
-);''')
+);''', {
+    'username': username,
+    'time_begin': current - time_begin,
+    'time_end': current - time_end
+})
 
         id_to_post_id = dict()
         pushes = dict()

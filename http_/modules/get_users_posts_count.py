@@ -12,8 +12,8 @@ class Module(BaseModule):
 
     def handle(self):
         current = get_current_time()
-        time_begin = self.get_param('time_begin', 604800)
-        time_end = self.get_param('time_end', 0)
+        time_begin = self.get_param('time_begin', value_type=int, default=604800)
+        time_end = self.get_param('time_end', value_type=int, default=0)
 
         query_result = self.db_handler.query('''
 SELECT `users`.`username`, COUNT(`posts`.`author`) FROM `posts`

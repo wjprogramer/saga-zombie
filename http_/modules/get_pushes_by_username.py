@@ -13,8 +13,8 @@ class Module(BaseModule):
     def handle(self):
         username = self.get_param('username')
         current = get_current_time()
-        time_begin = self.get_param('time_begin', 604800)
-        time_end = self.get_param('time_end', 0)
+        time_begin = self.get_param('time_begin', value_type=int, default=604800)
+        time_end = self.get_param('time_end', value_type=int, default=0)
 
         if username is None:
             self.send_status_code(400)

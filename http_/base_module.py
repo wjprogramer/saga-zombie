@@ -32,15 +32,16 @@ class BaseModule:
 
         self.handle()
 
-    def get_param(self, keyword: str, default=None):
+    def get_param(self, keyword: str, value_type=str, default=None):
         """get the value of the keyword in the query
         if the keyword exist,
         else return the default value
         """
 
-        if keyword in self.query and len(self.query[keyword]) >= 1:
-            return self.query[keyword][0]
-        return default
+        try:
+            return value_type(self.query[keyword][0])
+        except (IndexError, KeyError, TypeError):
+            return default
 
     def send_status_code(self, code: int):
         """send status code to client

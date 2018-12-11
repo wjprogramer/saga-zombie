@@ -1,7 +1,6 @@
 """HTTP server module
 """
 
-from importlib import import_module
 from functools import partial
 
 from urllib.parse import urlparse
@@ -9,6 +8,7 @@ from http.server import ThreadingHTTPServer
 from http.server import BaseHTTPRequestHandler
 
 from db.sqlite_db_handler import SQLiteDBHandler
+import module_loader
 
 class RequestHandler(BaseHTTPRequestHandler):
     """Class for handling request
@@ -28,7 +28,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         path = urlparse(self.path).path
         print(self.path)
         try:
-            module = import_module(RequestHandler.MODULES_PATH + path.replace('/', '.'))
+            module = module_loader.load(RequestHandler.MODULES_PATH + path.replace('/', '.'))
             module.Module(self, self.__db)
         except ModuleNotFoundError as exception:
             print(exception)

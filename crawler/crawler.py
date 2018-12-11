@@ -42,19 +42,22 @@ class Crawler:
         # binary search
         left, right, found = 1, newest, False
 
-        print('binary search for timestamp', timestamp, 'on board', board)
+        print('[crawler]', 'binary search for timestamp', timestamp, 'on board', board)
 
         # find start index
         while abs(left - right) > 1 and not found:
             middle = (left + right) // 2
-            print('binary search left', left, 'middle', middle, 'right', right)
+            print('[crawler]', 'binary search left', left, 'middle', middle, 'right', right)
 
             # linear search lhs
             for i in range(middle, left, -1):
                 status = PTT.ErrorCode.UnknowError
                 while status not in Crawler.SUCCESS_OR_DELETED:
+                    thread = threading.Timer(10, self.__ptt.logout)
+                    thread.start()
                     status, post = self.__ptt.getPost(Board=board, PostIndex=i)
-                print(i, (' deleted' if status == PTT.ErrorCode.PostDeleted else ''))
+                    thread.cancel()
+                print('[crawler]', i, ('deleted' if status == PTT.ErrorCode.PostDeleted else ''))
                 if status == PTT.ErrorCode.Success:
                     middle = i
                     break
@@ -63,8 +66,11 @@ class Crawler:
                 for i in range(middle + 1, right):
                     status = PTT.ErrorCode.UnknowError
                     while status not in Crawler.SUCCESS_OR_DELETED:
+                        thread = threading.Timer(10, self.__ptt.logout)
+                        thread.start()
                         status, post = self.__ptt.getPost(Board=board, PostIndex=i)
-                    print(i, (' deleted' if status == PTT.ErrorCode.PostDeleted else ''))
+                        thread.cancel()
+                    print(i, ('[crawler]', 'deleted' if status == PTT.ErrorCode.PostDeleted else ''))
                     if status == PTT.ErrorCode.Success:
                         middle = i
                         break
@@ -75,15 +81,15 @@ class Crawler:
 
             post_time = get_post_time(post)
             if post_time == timestamp:
-                print('[' + board + ']', middle, post_time, '==', post_time, 'return')
+                print('[crawler]', '[' + board + ']', middle, post_time, '==', post_time, 'return')
                 left = middle
                 found = True
                 break
             elif post_time < timestamp:
-                print('[' + board + ']', middle, post_time, '<', post_time, 'left = mid')
+                print('[crawler]', '[' + board + ']', middle, post_time, '<', post_time, 'left = mid')
                 left = middle
             else:
-                print('[' + board + ']', middle, post_time, '>', post_time, 'right = mid')
+                print('[crawler]', '[' + board + ']', middle, post_time, '>', post_time, 'right = mid')
                 right = middle
 
         return left
@@ -91,15 +97,26 @@ class Crawler:
     def __newest_index(self, board):
         status = PTT.ErrorCode.UnknowError
         while status != PTT.ErrorCode.Success:
+            thread = threading.Timer(10, self.__ptt.logout)
+            thread.start()
             status, newest = self.__ptt.getNewestIndex(Board=board)
+            thread.cancel()
         return newest
 
     def __crawl_post(self, board, index):
-        print('crawling', '[' + board + ']', index)
+        print('[crawler] crawling', '[' + board + ']', index)
         status = PTT.ErrorCode.UnknowError
         while status not in Crawler.SUCCESS_OR_DELETED:
+            thread = threading.Timer(10, self.__ptt.logout)
+            thread.start()
             status, post = self.__ptt.getPost(Board=board, PostIndex=index)
-            print('status:', status, 'title:', post.getTitle())
+            thread.cancel()
+            
+            print(
+                '[crawler] success or deleted:',
+                status in Crawler.SUCCESS_OR_DELETED,
+                'title:',
+                post.getTitle())
         self.__db.insert_or_update_post(post)
 
     def __crawl_posts_in_time_range(self, board, time_start, time_end):
@@ -109,18 +126,21 @@ class Crawler:
         newest = self.__newest_index(board)
         if newest == -1:
             eprint('[crawler]', 'failed to get newest index on board:', board)
-            return
+            return False
 
         start_index, end_index = (
             self.__find_index(board, newest, time_start),
             self.__find_index(board, newest, time_end))
 
         print(
+            '[crawler]',
             'start crawling from index', start_index,
             'to index', end_index,
             'in board', '[' + board + ']')
         for i in range(start_index, end_index + 1):
             self.__crawl_post(board, i)
+
+        return True
 
     def start(self):
         """
@@ -148,13 +168,14 @@ class Crawler:
                     if current - last_time < period:
                         continue
 
-                    self.__crawl_posts_in_time_range(
+                    status = self.__crawl_posts_in_time_range(
                         board,
                         current - time_begin,
                         current - time_end
                     )
 
-                    self.__db.set_time_range_crawled(board, time_begin, time_end)
+                    if status:
+                        self.__db.set_time_range_crawled(board, time_begin, time_end)
 
                 time.sleep(1)
 
@@ -163,7 +184,7 @@ class Crawler:
 
     def __start_in_new_thread(self):
         while not self.__stop:
-            thread = threading.Thread(target=self.start)
+            thread = threading.Thread(target=self.start, daemon=True)
             thread.start()
             thread.join()
 
@@ -172,4 +193,4 @@ class Crawler:
         start crawling in a new thread
         """
 
-        threading.Thread(target=self.__start_in_new_thread).start()
+        threading.Thread(target=self.__start_in_new_thread, daemon=True).start()

@@ -1,8 +1,6 @@
 """test module
 """
 
-import json
-
 from http_.base_module import BaseModule
 
 class Module(BaseModule):

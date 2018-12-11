@@ -1,8 +1,6 @@
 """get_posts_by_username module
 """
 
-import json
-
 from http_.base_module import BaseModule
 from http_.base_module import RequiredParam
 
@@ -11,12 +9,10 @@ class Module(BaseModule):
     """
 
     def required_param(self):
-        return (
-            RequiredParam('username')
-        )
+        return (RequiredParam('username'),)
 
     def get_data(self):
-        username = params = self.get_params()[0]
+        username = self.get_params()[0]
 
         posts = self.db_handler.get_posts_by_username(username)
         kw_posts = list()

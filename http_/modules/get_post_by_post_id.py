@@ -1,8 +1,6 @@
 """get_post_by_post_id module
 """
 
-import json
-
 from http_.base_module import BaseModule
 from http_.base_module import RequiredParam
 

@@ -2,3 +2,4 @@ PTTLibrary
 numpy
 pandas
 mysql-connector
+jieba

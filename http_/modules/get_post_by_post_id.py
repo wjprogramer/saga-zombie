@@ -4,22 +4,17 @@
 import json
 
 from http_.base_module import BaseModule
+from http_.base_module import RequiredParam
 
 class Module(BaseModule):
     """get_post_by_post_id module
     """
 
-    def handle(self):
-        post_id = self.get_param('post_id')
+    def required_param(self):
+        return (RequiredParam('post_id'),)
 
-        if post_id is None:
-            self.send_status_code(400)
-            self.send_header(BaseModule.CONTENT_TYPE, BaseModule.CONTENT_TYPE_JSON)
-            self.write(json.dumps({
-                'status': 'failed',
-                'info': 'missing post_id'
-            }))
-            return
+    def get_data(self):
+        post_id = self.get_params()[0]
 
         query_result = self.db_handler.query('''
 SELECT `boards`.`name`, `users`.`username`, `date_time`, `title`, `web_url`, `money`, `ip` FROM `posts`
@@ -27,11 +22,8 @@ LEFT JOIN `users` ON `posts`.`author` = `users`.`id`
 LEFT JOIN `boards` ON `posts`.`board` = `boards`.`id`
 WHERE `posts`.`post_id` = :post_id ;''', {'post_id': post_id})
 
-        if len(query_result) > 0:
-            self.send_status_code(200)
-            self.send_header(BaseModule.CONTENT_TYPE, BaseModule.CONTENT_TYPE_JSON)
-            self.end_headers()
-            self.write(json.dumps({
+        try:
+            return dict({
                 'board': query_result[0][0],
                 'author': query_result[0][1],
                 'date_time': query_result[0][2],
@@ -39,9 +31,6 @@ WHERE `posts`.`post_id` = :post_id ;''', {'post_id': post_id})
                 'web_url': query_result[0][4],
                 'money': query_result[0][5],
                 'ip': query_result[0][6]
-            }))
-        else:
-            self.send_status_code(404)
-            self.send_header(BaseModule.CONTENT_TYPE, BaseModule.CONTENT_TYPE_JSON)
-            self.end_headers()
-            self.write(json.dumps({'status': 'failed', 'info': 'not found'}))
+            })
+        except IndexError:
+            return {}

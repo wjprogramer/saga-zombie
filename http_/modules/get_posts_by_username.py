@@ -4,23 +4,19 @@
 import json
 
 from http_.base_module import BaseModule
+from http_.base_module import RequiredParam
 
 class Module(BaseModule):
     """get_posts_by_username module
     """
 
-    def handle(self):
+    def required_param(self):
+        return (
+            RequiredParam('username')
+        )
 
-        username = self.get_param('username')
-
-        if username is None:
-            self.send_status_code(400)
-            self.send_header(BaseModule.CONTENT_TYPE, BaseModule.CONTENT_TYPE_JSON)
-            self.write(json.dumps({
-                'status': 'failed',
-                'info': 'missing parameters'
-            }))
-            return
+    def get_data(self):
+        username = params = self.get_params()[0]
 
         posts = self.db_handler.get_posts_by_username(username)
         kw_posts = list()
@@ -33,7 +29,4 @@ class Module(BaseModule):
             kw_post['money'] = post[7]
             kw_post['ip'] = post[8]
             kw_posts.append(kw_post)
-        self.send_status_code(200)
-        self.send_header(BaseModule.CONTENT_TYPE, BaseModule.CONTENT_TYPE_JSON)
-        self.end_headers()
-        self.write(json.dumps(kw_posts))
+        return kw_posts

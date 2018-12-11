@@ -4,10 +4,19 @@
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
-import time
+import json
 
 from db.sqlite_db_handler import SQLiteDBHandler
 from utils import get_current_time_str
+
+class RequiredParam:
+    """Required Parameters
+    """
+
+    def __init__(self, keyword: str, value_type=str, default=None):
+        self.keyword = keyword
+        self.value_type = value_type
+        self.default = default
 
 class BaseModule:
     """base module
@@ -17,6 +26,9 @@ class BaseModule:
     CONTENT_TYPE_JSON = 'text/json'
     ENCODING = 'utf-8'
 
+    CACHING = dict()
+    MAX_CACHING_SIZE = 512 * 1024 * 1024
+
     def __init__(self, request_handler: BaseHTTPRequestHandler, db_handler: SQLiteDBHandler):
         self.request_handler = request_handler
         self.db_handler = db_handler
@@ -24,15 +36,18 @@ class BaseModule:
         parsed_result = urlparse(self.request_handler.path)
         self.path = parsed_result.path
         self.query = parse_qs(parsed_result.query)
+        
+        self.params = list()
 
         print(
             '[' + get_current_time_str() + ']',
             self.request_handler.client_address,
             self.request_handler.path)
 
-        self.handle()
+        if self.__check_param():
+            self.__handle()
 
-    def get_param(self, keyword: str, value_type=str, default=None):
+    def __get_param(self, keyword: str, value_type=str, default=None):
         """get the value of the keyword in the query
         if the keyword exist,
         else return the default value
@@ -43,25 +58,25 @@ class BaseModule:
         except (IndexError, KeyError, TypeError):
             return default
 
-    def send_status_code(self, code: int):
+    def __send_status_code(self, code: int):
         """send status code to client
         """
 
         self.request_handler.send_response(code)
 
-    def send_header(self, keyword, value):
+    def __send_header(self, keyword, value):
         """send header to client
         """
 
         self.request_handler.send_header(keyword, value)
 
-    def end_headers(self):
+    def __end_headers(self):
         """end headers
         """
 
         self.request_handler.end_headers()
 
-    def write(self, data):
+    def __write(self, data):
         """write response body
         """
 
@@ -69,16 +84,62 @@ class BaseModule:
             data = str(data).encode(BaseModule.ENCODING)
         self.request_handler.wfile.write(data)
 
-    def flush(self):
+    def __flush(self):
         """flush
         """
 
         self.request_handler.wfile.flush()
 
-    def handle(self):
-        """handle the request
+    def __handle(self):
+        self.__send_status_code(200)
+        self.__send_header(BaseModule.CONTENT_TYPE, BaseModule.CONTENT_TYPE_JSON)
+        self.__end_headers()
+        self.__write(json.dumps(self.get_data()))
 
-        This method should be implemented by it's subclasses
+    def __missing_param(self, keyword):
+        self.__send_status_code(400)
+        self.__send_header(BaseModule.CONTENT_TYPE, BaseModule.CONTENT_TYPE_JSON)
+        self.__write(json.dumps({
+            'status': 'failed',
+            'info': 'missing `' + keyword + '`'
+        }))
+
+    def __check_param(self):
+        for param in self.required_param():
+            p = self.__get_param(param.keyword, param.value_type, param.default)
+            if p is None and param.default is None:
+                self.__missing_param(param.keyword)
+                return False
+            self.params.append(p)
+        return True
+
+    def not_found(self):
+        self.__send_status_code(404)
+        self.__send_header(BaseModule.CONTENT_TYPE, BaseModule.CONTENT_TYPE_JSON)
+        self.__end_headers()
+        self.__write(json.dumps({'status': 'failed', 'info': 'not found'}))
+
+    def required_param(self):
+        """check client input
+
+        parameter: list(RequiredParam)
+        """
+
+        return []
+
+    def get_params(self):
+        """return the parameters required from `required_param()`
+        """
+
+        return tuple(self.params)
+
+    def get_data(self):
+        """return the real data
+
+        it will be called when there's not
+        existing cache or existing cache
+
+        the data will be encoded as JSON and send to client
         """
 
         raise NotImplementedError()

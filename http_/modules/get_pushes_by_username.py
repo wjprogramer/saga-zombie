@@ -4,26 +4,26 @@
 import json
 
 from http_.base_module import BaseModule
+from http_.base_module import RequiredParam
 from utils import get_current_time
 
 class Module(BaseModule):
     """get_pushes_by_username module
     """
 
-    def handle(self):
-        username = self.get_param('username')
-        current = get_current_time()
-        time_begin = self.get_param('time_begin', value_type=int, default=604800)
-        time_end = self.get_param('time_end', value_type=int, default=0)
+    def required_param(self):
+        return (
+            RequiredParam('username'),
+            RequiredParam('time_begin', int, 604800),
+            RequiredParam('time_end', int, 0)
+        )
 
-        if username is None:
-            self.send_status_code(400)
-            self.send_header(BaseModule.CONTENT_TYPE, BaseModule.CONTENT_TYPE_JSON)
-            self.write(json.dumps({
-                'status': 'failed',
-                'info': 'missing parameters'
-            }))
-            return
+    def get_data(self):
+        params = self.get_params()
+        username = params[0]
+        current = get_current_time()
+        time_begin = params[1]
+        time_end = params[2]
 
         pushes_query_result = self.db_handler.query('''
 SELECT `post`, `type`, `content`, `ip`, `date_time` FROM `pushes`
@@ -66,7 +66,4 @@ WHERE `id` IN (
         for k, v in pushes.items():
             kw_result[id_to_post_id[k]] = v
 
-        self.send_status_code(200)
-        self.send_header(BaseModule.CONTENT_TYPE, BaseModule.CONTENT_TYPE_JSON)
-        self.end_headers()
-        self.write(json.dumps(kw_result))
+        return kw_result

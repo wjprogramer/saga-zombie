@@ -158,10 +158,10 @@ class Crawler:
             while not self.__stop:
                 for range_ in self.__ranges:
                     current = get_current_time()
-                    board = range_.get_board()
-                    time_begin = range_.get_time_begin()
-                    time_end = range_.get_time_end()
-                    period = range_.get_period()
+                    board = range_.board
+                    time_begin = range_.time_begin
+                    time_end = range_.time_end
+                    period = range_.period
 
                     last_time = self.__db.get_time_range_last_crawled(board, time_begin, time_end)
 

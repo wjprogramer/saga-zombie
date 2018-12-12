@@ -10,24 +10,24 @@ from utils import eprint
 from utils import get_post_time
 from utils import get_current_time
 
-from .configs import Config
-from .configs import ConfigTimeRange
+from crawler_.configs import Config
+from crawler_.configs import ConfigTimeRange
 
 class Crawler:
-    """
-    Crawler class
+    """Crawler class
     """
 
     SUCCESS_OR_DELETED = (PTT.ErrorCode.Success, PTT.ErrorCode.PostDeleted)
+    TIMEOUT = 20
 
     def __init__(self, crawler_configs: Config):
         self.__configs = crawler_configs
         self.__ptt = PTT.Library(
-            ID=self.__configs.get_username(),
-            Password=self.__configs.get_password(),
-            kickOtherLogin=False)
-        self.__ranges = self.__configs.get_time_ranges()
-        self.__db = self.__configs.get_database()
+            ID=self.__configs.username,
+            Password=self.__configs.password,
+            kickOtherLogin=self.__configs.kick_others)
+        self.__ranges = self.__configs.ranges
+        self.__db = self.__configs.db
         self.__stopped = True
         self.__stop = False
 
@@ -53,7 +53,7 @@ class Crawler:
             for i in range(middle, left, -1):
                 status = PTT.ErrorCode.UnknowError
                 while status not in Crawler.SUCCESS_OR_DELETED:
-                    thread = threading.Timer(10, self.__ptt.logout)
+                    thread = threading.Timer(Crawler.TIMEOUT, self.__ptt.logout)
                     thread.start()
                     status, post = self.__ptt.getPost(Board=board, PostIndex=i)
                     thread.cancel()
@@ -66,7 +66,7 @@ class Crawler:
                 for i in range(middle + 1, right):
                     status = PTT.ErrorCode.UnknowError
                     while status not in Crawler.SUCCESS_OR_DELETED:
-                        thread = threading.Timer(10, self.__ptt.logout)
+                        thread = threading.Timer(Crawler.TIMEOUT, self.__ptt.logout)
                         thread.start()
                         status, post = self.__ptt.getPost(Board=board, PostIndex=i)
                         thread.cancel()
@@ -97,7 +97,7 @@ class Crawler:
     def __newest_index(self, board):
         status = PTT.ErrorCode.UnknowError
         while status != PTT.ErrorCode.Success:
-            thread = threading.Timer(10, self.__ptt.logout)
+            thread = threading.Timer(Crawler.TIMEOUT, self.__ptt.logout)
             thread.start()
             status, newest = self.__ptt.getNewestIndex(Board=board)
             thread.cancel()
@@ -107,7 +107,7 @@ class Crawler:
         print('[crawler] crawling', '[' + board + ']', index)
         status = PTT.ErrorCode.UnknowError
         while status not in Crawler.SUCCESS_OR_DELETED:
-            thread = threading.Timer(10, self.__ptt.logout)
+            thread = threading.Timer(Crawler.TIMEOUT, self.__ptt.logout)
             thread.start()
             status, post = self.__ptt.getPost(Board=board, PostIndex=index)
             thread.cancel()

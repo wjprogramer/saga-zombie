@@ -7,9 +7,9 @@ import json
 
 from utils import eprint
 
-from crawler.configs import check_crawler_configs
-from crawler.configs import make_crawler_config_objects
-from crawler.crawler import Crawler
+from crawler_.configs import check_crawler_configs
+from crawler_.configs import make_crawler_config_objects
+from crawler_.crawler import Crawler
 
 from db.instance import make_db_instance
 from db.instance import check_db_config

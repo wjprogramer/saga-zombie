@@ -42,6 +42,7 @@ def make_crawler_config_objects(config, db):
     return Config(
         config['username'],
         config['password'],
+        config['kick_others'],
         db,
         ranges
     )
@@ -59,48 +60,25 @@ class ConfigTimeRange:
     }
 
     def __init__(self, board, time_begin, time_end, period):
-        self.__board = board
-        self.__time_begin = time_begin
-        self.__time_end = time_end
-        self.__period = period
-
-    def get_board(self):
-        return self.__board
-
-    def get_time_begin(self):
-        return self.__time_begin
-
-    def get_time_end(self):
-        return self.__time_end
-
-    def get_period(self):
-        return self.__period
+        self.board = board
+        self.time_begin = time_begin
+        self.time_end = time_end
+        self.period = period
 
 class Config:
-    """
-    crawler config object
+    """crawler config object
     """
 
     CONFIG_KEYS = {
         'username': str,
         'password': str,
+        'kick_others': bool,
         'ranges': list
     }
 
-    def __init__(self, username, password, db, ranges):
-        self.__username = username
-        self.__password = password
-        self.__db = db
-        self.__ranges = ranges
-
-    def get_username(self):
-        return self.__username
-
-    def get_password(self):
-        return self.__password
-
-    def get_database(self):
-        return self.__db
-
-    def get_time_ranges(self):
-        return self.__ranges
+    def __init__(self, username, password, kick_others, db, ranges):
+        self.username = username
+        self.password = password
+        self.kick_others = kick_others
+        self.db = db
+        self.ranges = ranges

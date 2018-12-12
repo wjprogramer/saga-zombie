@@ -23,11 +23,8 @@ class BaseModule:
     """
 
     CONTENT_TYPE = 'Content-Type'
-    CONTENT_TYPE_JSON = 'text/json'
+    CONTENT_TYPE_JSON = 'application/json'
     ENCODING = 'utf-8'
-
-    CACHING = dict()
-    MAX_CACHING_SIZE = 512 * 1024 * 1024
 
     def __init__(self, request_handler: BaseHTTPRequestHandler, db_handler: SQLiteDBHandler):
         self.request_handler = request_handler
@@ -95,6 +92,7 @@ class BaseModule:
         self.__send_header(BaseModule.CONTENT_TYPE, BaseModule.CONTENT_TYPE_JSON)
         self.__end_headers()
         self.__write(json.dumps(self.get_data()))
+        self.__flush()
 
     def __missing_param(self, keyword):
         self.__send_status_code(400)

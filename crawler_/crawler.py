@@ -184,7 +184,7 @@ class Crawler:
 
     def __start_in_new_thread(self):
         while not self.__stop:
-            thread = threading.Thread(target=self.start, daemon=True)
+            thread = threading.Thread(target=self.start)
             thread.start()
             thread.join()
 

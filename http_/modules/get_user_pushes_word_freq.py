@@ -2,11 +2,11 @@
 """
 
 from collections import Counter
-import jieba
 
 from http_.base_module import BaseModule
 from http_.base_module import RequiredParam
 from utils import get_current_time
+import jb
 
 class Module(BaseModule):
     """get_user_pushes_word_freq module
@@ -40,6 +40,6 @@ WHERE `author` = (
 
         counter = Counter()
         for row in query_result:
-            counter.update(jieba.cut(row[0]))
+            counter.update(jb.cut(row[0]))
 
         return counter

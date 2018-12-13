@@ -4,6 +4,7 @@ crawler module
 
 import time
 import threading
+import importlib
 
 from PTTLibrary import PTT
 from utils import eprint
@@ -156,6 +157,8 @@ class Crawler:
         """
 
         if self.__stopped and not self.__stop:
+            global PTT
+            PTT = importlib.reload(PTT)
             self.__ptt = PTT.Library(
                 ID=self.__configs.username,
                 Password=self.__configs.password,

@@ -19,7 +19,7 @@ class Crawler:
 
     SUCCESS_OR_DELETED = (PTT.ErrorCode.Success, PTT.ErrorCode.PostDeleted)
     TIMEOUT = 20
-    RETRY_SLEEP = 30
+    RETRY_SLEEP = 90
 
     def __init__(self, crawler_configs: Config):
         self.__configs = crawler_configs

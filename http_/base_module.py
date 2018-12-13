@@ -23,6 +23,7 @@ class BaseModule:
     """
 
     CONTENT_TYPE = 'Content-Type'
+    CONTENT_LENGTH = 'Content-Length'
     CONTENT_TYPE_JSON = 'application/json'
     ENCODING = 'utf-8'
 
@@ -59,7 +60,7 @@ class BaseModule:
         """send status code to client
         """
 
-        self.request_handler.send_response(code)
+        self.request_handler.send_response_only(code)
 
     def __send_header(self, keyword, value):
         """send header to client
@@ -81,18 +82,13 @@ class BaseModule:
             data = str(data).encode(BaseModule.ENCODING)
         self.request_handler.wfile.write(data)
 
-    def __flush(self):
-        """flush
-        """
-
-        self.request_handler.wfile.flush()
-
     def __handle(self):
+        data = json.dumps(self.get_data())
         self.__send_status_code(200)
         self.__send_header(BaseModule.CONTENT_TYPE, BaseModule.CONTENT_TYPE_JSON)
+        self.__send_header(BaseModule.CONTENT_LENGTH, len(data))
         self.__end_headers()
-        self.__write(json.dumps(self.get_data()))
-        self.__flush()
+        self.__write(data)
 
     def __missing_param(self, keyword):
         self.__send_status_code(400)

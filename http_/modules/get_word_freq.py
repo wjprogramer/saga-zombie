@@ -3,14 +3,15 @@
 
 from traceback import print_exc
 from collections import Counter
-from threading import Lock
+from collections import defaultdict
 from threading import Thread
+from threading import Lock
 from time import sleep
 
 from http_.base_module import BaseModule
 from http_.base_module import RequiredParam
 from utils import get_current_time
-import jb
+import words_statistics
 
 class DayCache:
     """cache class
@@ -30,6 +31,7 @@ class Module(BaseModule):
     CACHE_LIFE = 300
     caching_thread_checking_lock = Lock()
     caching_thread = None
+    CATCH_TOP_N_WORDS = 150
 
     def required_param(self):
         return (
@@ -73,9 +75,9 @@ WHERE `post` IN (
 
         counter = Counter()
         for row in query_result:
-            counter.update(jb.cut(row[0]))
+            counter.update(words_statistics.cut(row[0]))
 
-        day_cache.timestamp = current
+        day_cache.timestamp = get_current_time()
         day_cache.counter = counter
 
         return counter
@@ -125,7 +127,7 @@ WHERE `post` IN (
         if begining_day - endding_day > 30:
             endding_day = begining_day - 30
 
-        result = Counter()
+        result = defaultdict(int)
 
         # compute the result
         for day in range(endding_day, begining_day + 1):
@@ -133,6 +135,13 @@ WHERE `post` IN (
 
             counter = Module.__get_counter(self.db_handler, day, day_cache)
 
-            result.update(counter)
+            for k, v in counter.items():
+                if len(k) > 1:
+                    result[k] += v
 
-        return dict({k: v for k, v in result.items() if v > 1})
+        result = list((k, v) for k, v in result.items())
+        result.sort(key=lambda x: x[1])
+
+        if len(result) > Module.CATCH_TOP_N_WORDS:
+            result = result[-Module.CATCH_TOP_N_WORDS:]
+        return {'statistic': result}

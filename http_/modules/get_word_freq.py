@@ -28,7 +28,8 @@ class Module(BaseModule):
 
     cache = dict()
     cache_lock = Lock()
-    CACHE_LIFE = 300
+    CACHE_LIFE = 1200
+    ROUTINE_PERIOD = 900
     caching_thread_checking_lock = Lock()
     caching_thread = None
     CATCH_TOP_N_WORDS = 150
@@ -87,6 +88,13 @@ WHERE `post` IN (
     def __get_counter(db_handler, day, day_cache):
         current = get_current_time()
 
+        if day < 32:
+            counter = day_cache.counter
+            if counter is not None:
+                return counter
+            with day_cache.lock:
+                return day_cache.counter
+
         with day_cache.lock:
             if Module.CACHE_LIFE <= current - day_cache.timestamp:
                 return Module.__update_counter(db_handler, day, day_cache)
@@ -102,7 +110,7 @@ WHERE `post` IN (
                     day_cache = Module.__get_day_cache(day)
                     with day_cache.lock:
                         Module.__update_counter(db_handler, day, day_cache)
-                sleep(Module.CACHE_LIFE)
+                sleep(Module.ROUTINE_PERIOD)
             except KeyboardInterrupt:
                 pass
             except:

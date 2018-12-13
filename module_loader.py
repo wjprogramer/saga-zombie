@@ -12,5 +12,6 @@ def load(module: str):
     if module not in modules_mtime:
         modules_mtime[module] = mtime
     elif modules_mtime[module] != mtime:
+        modules_mtime[module] = mtime
         return importlib.reload(importlib.import_module(module))
     return importlib.import_module(module)

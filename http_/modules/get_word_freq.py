@@ -43,10 +43,11 @@ class Module(BaseModule):
     def __free_cache():
         current = get_current_time()
         with Module.cache_lock:
-            for day_cache in Module.cache.values():
-                with day_cache.lock:
-                    if Module.CACHE_LIFE < current - day_cache.timestamp:
-                        day_cache.counter = None
+            days_cache = tuple(Module.cache.values())
+        for day_cache in days_cache:
+            with day_cache.lock:
+                if Module.CACHE_LIFE < current - day_cache.timestamp:
+                    day_cache.counter = None
 
     @staticmethod
     def __get_day_cache(day):

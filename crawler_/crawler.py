@@ -70,7 +70,9 @@ class Crawler:
                         thread.start()
                         status, post = self.__ptt.getPost(Board=board, PostIndex=i)
                         thread.cancel()
-                    print(i, ('[crawler]', 'deleted' if status == PTT.ErrorCode.PostDeleted else ''))
+                    print(
+                        '[crawler]', i,
+                        ('deleted' if status == PTT.ErrorCode.PostDeleted else ''))
                     if status == PTT.ErrorCode.Success:
                         middle = i
                         break
@@ -193,4 +195,4 @@ class Crawler:
         start crawling in a new thread
         """
 
-        threading.Thread(target=self.__start_in_new_thread, daemon=True).start()
+        threading.Thread(target=self.__start_in_new_thread).start()

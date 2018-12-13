@@ -135,4 +135,4 @@ WHERE `post` IN (
 
             result.update(counter)
 
-        return result
+        return dict({k: v for k, v in result.items() if v > 1})

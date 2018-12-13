@@ -14,4 +14,4 @@ EXPOSE 8080
 
 VOLUME [ "/app/data", "/app/configs" ]
 
-CMD [ "python", "main.py" ]
+CMD [ "python", "-u", "main.py" ]

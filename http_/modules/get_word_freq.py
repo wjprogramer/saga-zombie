@@ -56,40 +56,47 @@ class Module(BaseModule):
         return day_cache
 
     @staticmethod
+    def __update_counter(db_handler, day, day_cache):
+        current = get_current_time()
+
+        query_result = db_handler.query('''
+SELECT `content` FROM `posts_content`
+WHERE `post` IN (
+    SELECT `id` FROM `posts`
+    WHERE `date_time` BETWEEN :time_begin AND :time_end
+);''',
+            {
+                'time_begin': current - (day + 1) * 86400,
+                'time_end': current - day * 86400
+            })
+
+        counter = Counter()
+        for row in query_result:
+            counter.update(jb.cut(row[0]))
+
+        day_cache.timestamp = current
+        day_cache.counter = counter
+
+        return counter
+
+    @staticmethod
     def __get_counter(db_handler, day, day_cache):
         current = get_current_time()
 
         with day_cache.lock:
             if Module.CACHE_LIFE <= current - day_cache.timestamp:
-
-                query_result = db_handler.query('''
-SELECT `content` FROM `posts_content`
-WHERE `post` IN (
-SELECT `id` FROM `posts`
-WHERE `date_time` BETWEEN :time_begin AND :time_end
-);''',
-                    {
-                        'time_begin': current - (day + 1) * 86400,
-                        'time_end': current - day * 86400
-                    })
-
-                counter = Counter()
-                for row in query_result:
-                    counter.update(jb.cut(row[0]))
-
-                day_cache.timestamp = current
-                day_cache.counter = counter
-
-                return counter
+                return Module.__update_counter(db_handler, day, day_cache)
             return day_cache.counter
 
     @staticmethod
     def __caching_thread_routine(db_handler):
         while True:
+            print('[module get_word_freq] in caching thread routine')
             Module.__free_cache()
             for day in range(0, 32):
                 day_cache = Module.__get_day_cache(day)
-                Module.__get_counter(db_handler, day, day_cache)
+                with day_cache.lock:
+                    Module.__update_counter(db_handler, day, day_cache)
             sleep(Module.CACHE_LIFE)
 
     @staticmethod

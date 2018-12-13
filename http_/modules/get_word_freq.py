@@ -26,7 +26,7 @@ class Module(BaseModule):
 
     cache = dict()
     cache_lock = Lock()
-    CACHE_LIFE = 60
+    CACHE_LIFE = 300
     caching_thread_checking_lock = Lock()
     caching_thread = None
 

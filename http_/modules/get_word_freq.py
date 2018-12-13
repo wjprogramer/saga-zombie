@@ -113,8 +113,6 @@ WHERE `date_time` BETWEEN :time_begin AND :time_end
 
         result = Counter()
 
-        Module.__free_cache()
-
         # compute the result
         for day in range(endding_day, begining_day + 1):
             day_cache = Module.__get_day_cache(day)

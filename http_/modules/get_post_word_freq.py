@@ -5,7 +5,7 @@ from collections import Counter
 
 from http_.base_module import BaseModule
 from http_.base_module import RequiredParam
-import jb
+import words_statistics
 
 class Module(BaseModule):
     """get_post_word_freq module
@@ -25,6 +25,6 @@ WHERE `post` = (
 ) ;''', {'post_id': post_id})
 
         try:
-            return Counter(jb.cut(query_result[0][0]))
+            return Counter(words_statistics.cut(query_result[0][0]))
         except IndexError:
             return {}

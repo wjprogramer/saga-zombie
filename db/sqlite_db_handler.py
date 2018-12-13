@@ -214,6 +214,7 @@ VALUES
         author = get_post_author_id(post)
         board = post.getBoard()
         delete_status = post.getDeleteStatus()
+        post_time = get_post_time(post)
         self.add_user(author)
         self.add_board(board)
 
@@ -260,7 +261,7 @@ VALUES
                         'board': board,
                         'post_id': post_id,
                         'author': author,
-                        'date_time': get_post_time(post),
+                        'date_time': post_time,
                         'title': post.getTitle(),
                         'web_url': post.getWebUrl(),
                         'money': post.getMoney(),
@@ -305,6 +306,10 @@ WHERE `post` = (
                 year = get_post_year(post)
                 for push in post.getPushList():
                     author = push.getAuthor()
+                    push_time = get_push_time(year, push)
+                    if push_time < post_time:
+                        year += 1
+                        push_time = get_push_time(year, push)
                     self.add_user(author)
                     self.__execute_write('''
 INSERT INTO `pushes`
@@ -338,7 +343,7 @@ VALUES
                         'author': push.getAuthor(),
                         'content': push.getContent(),
                         'ip': push.getIP(),
-                        'date_time': get_push_time(year, push)
+                        'date_time': push_time
                     })
 
                 self.__execute_write('''

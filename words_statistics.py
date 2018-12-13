@@ -7,7 +7,7 @@ jieba.enable_parallel(os.cpu_count())
 
 def cut(string):
     with cut.lock:
-        return basic_filter(jieba.cut(string, cut_all=True))
+        return jieba.cut(string, cut_all=True)
 
 
 def basic_filter(i):

@@ -195,4 +195,5 @@ class Crawler:
         start crawling in a new thread
         """
 
-        threading.Thread(target=self.__start_in_new_thread).start()
+        if len(self.__ranges) > 0:
+            threading.Thread(target=self.__start_in_new_thread).start()

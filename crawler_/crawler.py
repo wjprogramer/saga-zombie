@@ -19,13 +19,11 @@ class Crawler:
 
     SUCCESS_OR_DELETED = (PTT.ErrorCode.Success, PTT.ErrorCode.PostDeleted)
     TIMEOUT = 20
+    RETRY_SLEEP = 30
 
     def __init__(self, crawler_configs: Config):
         self.__configs = crawler_configs
-        self.__ptt = PTT.Library(
-            ID=self.__configs.username,
-            Password=self.__configs.password,
-            kickOtherLogin=self.__configs.kick_others)
+        self.__ptt = None
         self.__ranges = self.__configs.ranges
         self.__db = self.__configs.db
         self.__stopped = True
@@ -56,6 +54,8 @@ class Crawler:
                     thread = threading.Timer(Crawler.TIMEOUT, self.__ptt.logout)
                     thread.start()
                     status, post = self.__ptt.getPost(Board=board, PostIndex=i)
+                    if status == PTT.ErrorCode.WaitTimeout:
+                        time.sleep(Crawler.RETRY_SLEEP)
                     thread.cancel()
                 print('[crawler]', i, ('deleted' if status == PTT.ErrorCode.PostDeleted else ''))
                 if status == PTT.ErrorCode.Success:
@@ -69,6 +69,8 @@ class Crawler:
                         thread = threading.Timer(Crawler.TIMEOUT, self.__ptt.logout)
                         thread.start()
                         status, post = self.__ptt.getPost(Board=board, PostIndex=i)
+                        if status == PTT.ErrorCode.WaitTimeout:
+                            time.sleep(Crawler.RETRY_SLEEP)
                         thread.cancel()
                     print(
                         '[crawler]', i,
@@ -102,6 +104,8 @@ class Crawler:
             thread = threading.Timer(Crawler.TIMEOUT, self.__ptt.logout)
             thread.start()
             status, newest = self.__ptt.getNewestIndex(Board=board)
+            if status == PTT.ErrorCode.WaitTimeout:
+                time.sleep(Crawler.RETRY_SLEEP)
             thread.cancel()
         return newest
 
@@ -112,6 +116,8 @@ class Crawler:
             thread = threading.Timer(Crawler.TIMEOUT, self.__ptt.logout)
             thread.start()
             status, post = self.__ptt.getPost(Board=board, PostIndex=index)
+            if status == PTT.ErrorCode.WaitTimeout:
+                time.sleep(Crawler.RETRY_SLEEP)
             thread.cancel()
             
             print(
@@ -150,11 +156,18 @@ class Crawler:
         """
 
         if self.__stopped and not self.__stop:
+            self.__ptt = PTT.Library(
+                ID=self.__configs.username,
+                Password=self.__configs.password,
+                kickOtherLogin=self.__configs.kick_others)
             ptt = self.__ptt
 
+            timer = threading.Timer(Crawler.TIMEOUT, ptt.logout)
             if ptt.login() != PTT.ErrorCode.Success:
                 self.__stopped = True
+                timer.cancel()
                 return
+            timer.cancel()
             self.__stopped = False
 
             while not self.__stop:

@@ -189,6 +189,7 @@ class Crawler:
             thread = threading.Thread(target=self.start)
             thread.start()
             thread.join()
+            time.sleep(10)
 
     def start_in_new_thread(self):
         """

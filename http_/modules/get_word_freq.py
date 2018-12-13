@@ -1,6 +1,7 @@
 """get_word_freq module
 """
 
+from traceback import print_exc
 from collections import Counter
 from threading import Lock
 from threading import Thread
@@ -91,18 +92,24 @@ WHERE `post` IN (
     @staticmethod
     def __caching_thread_routine(db_handler):
         while True:
-            print('[module get_word_freq] in caching thread routine')
-            Module.__free_cache()
-            for day in range(0, 32):
-                day_cache = Module.__get_day_cache(day)
-                with day_cache.lock:
-                    Module.__update_counter(db_handler, day, day_cache)
-            sleep(Module.CACHE_LIFE)
+            try:
+                print('[module get_word_freq] in caching thread routine')
+                Module.__free_cache()
+                for day in range(0, 32):
+                    day_cache = Module.__get_day_cache(day)
+                    with day_cache.lock:
+                        Module.__update_counter(db_handler, day, day_cache)
+                sleep(Module.CACHE_LIFE)
+            except KeyboardInterrupt:
+                pass
+            except:
+                print_exc()
 
     @staticmethod
     def __check_caching_thread(db_handler):
         with Module.caching_thread_checking_lock:
             if Module.caching_thread is None or not Module.caching_thread.is_alive():
+                print('[module get_word_freq] create new routine thread')
                 Module.caching_thread = Thread(
                     target=Module.__caching_thread_routine, args=[db_handler], daemon=True)
                 Module.caching_thread.start()

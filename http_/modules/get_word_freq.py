@@ -62,6 +62,8 @@ class Module(BaseModule):
 
     @staticmethod
     def __update_counter(db_handler, day, day_cache):
+        print('[module get_word_freq] updating counter for day:', day)
+
         current = get_current_time()
 
         query_result = db_handler.query('''

@@ -3,7 +3,6 @@
 
 from traceback import print_exc
 from collections import Counter
-from collections import defaultdict
 from threading import Thread
 from threading import Lock
 from time import sleep
@@ -139,7 +138,7 @@ WHERE `post` IN (
         if begining_day - endding_day > 30:
             endding_day = begining_day - 30
 
-        result = defaultdict(int)
+        result = Counter()
 
         # compute the result
         for day in range(endding_day, begining_day + 1):
@@ -147,13 +146,8 @@ WHERE `post` IN (
 
             counter = Module.__get_counter(self.db_handler, day, day_cache)
 
-            for k, v in counter.items():
-                if len(k) > 1:
-                    result[k] += v
+            result.update(counter)
 
-        result = list((k, v) for k, v in result.items())
-        result.sort(key=lambda x: x[1])
+        result = list((k, v) for k, v in result.most_common(Module.CATCH_TOP_N_WORDS))
 
-        if len(result) > Module.CATCH_TOP_N_WORDS:
-            result = result[-Module.CATCH_TOP_N_WORDS:]
         return {'statistic': result}

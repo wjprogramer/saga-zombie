@@ -158,7 +158,9 @@ class Crawler:
 
         if self.__stopped and not self.__stop:
             global PTT
+            print('[crawler] reload PTTLibrary')
             PTT = importlib.reload(PTT)
+            print('[crawler] PTT.Library()')
             self.__ptt = PTT.Library(
                 ID=self.__configs.username,
                 Password=self.__configs.password,
@@ -168,9 +170,11 @@ class Crawler:
 
             timer = threading.Timer(Crawler.TIMEOUT, ptt.logout)
             if ptt.login() != PTT.ErrorCode.Success:
+                print('[crawler] login failed')
                 self.__stopped = True
                 timer.cancel()
                 return
+            print('[crawler] login successfully')
             timer.cancel()
             self.__stopped = False
 
@@ -205,8 +209,10 @@ class Crawler:
         while not self.__stop:
             print('[crawler] create new thread')
             thread = threading.Thread(target=self.start)
+            print('[crawler] start thread')
             thread.start()
             thread.join()
+            print('[crawler] thread joined, sleep... Zzz...')
             time.sleep(Crawler.RETRY_SLEEP)
 
     def start_in_new_thread(self):

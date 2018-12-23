@@ -4,6 +4,10 @@ main
 
 import atexit
 import json
+import sys
+import os
+
+sys.path.append(os.path.abspath('PTTLibrary'))
 
 from utils import eprint
 

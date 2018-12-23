@@ -8,6 +8,12 @@
 pip3 install -r requirements.txt
 ```
 
+### docker
+
+```sh
+docker build -t saga-zombie .
+```
+
 ## 資料庫架構
 
 [點我](./Database%20structure.md)
@@ -34,8 +40,6 @@ pip3 install -r requirements.txt
 with SQLiteDBHandler('test.db') as db:
 	# do something here
 ```
-
-
 
 #### 查詢
 

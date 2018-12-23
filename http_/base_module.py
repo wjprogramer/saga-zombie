@@ -83,7 +83,10 @@ class BaseModule:
         self.request_handler.wfile.write(data)
 
     def __handle(self):
-        data = json.dumps(self.get_data())
+        try:
+            data = json.dumps(self.get_data())
+        except:
+            data = json.dumps({'status': 'module fault'})
         self.__send_status_code(200)
         self.__send_header(BaseModule.CONTENT_TYPE, BaseModule.CONTENT_TYPE_JSON)
         self.__send_header(BaseModule.CONTENT_LENGTH, len(data))

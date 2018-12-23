@@ -3,3 +3,5 @@ numpy
 pandas
 mysql-connector
 jieba
+paramiko
+uao

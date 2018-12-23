@@ -1,4 +1,3 @@
-PTTLibrary
 numpy
 pandas
 mysql-connector

@@ -50,7 +50,7 @@ class Crawler:
 
             # linear search lhs
             for i in range(middle, left, -1):
-                status = PTT.ErrorCode.UnknowError
+                status = PTT.ErrorCode.UnknownError
                 while status not in Crawler.SUCCESS_OR_DELETED:
                     thread = threading.Timer(Crawler.TIMEOUT, self.__ptt.logout)
                     thread.start()
@@ -65,7 +65,7 @@ class Crawler:
             # if not found in lhs then search rhs
             if status != PTT.ErrorCode.Success:
                 for i in range(middle + 1, right):
-                    status = PTT.ErrorCode.UnknowError
+                    status = PTT.ErrorCode.UnknownError
                     while status not in Crawler.SUCCESS_OR_DELETED:
                         thread = threading.Timer(Crawler.TIMEOUT, self.__ptt.logout)
                         thread.start()
@@ -100,7 +100,7 @@ class Crawler:
         return left
 
     def __newest_index(self, board):
-        status = PTT.ErrorCode.UnknowError
+        status = PTT.ErrorCode.UnknownError
         while status != PTT.ErrorCode.Success:
             thread = threading.Timer(Crawler.TIMEOUT, self.__ptt.logout)
             thread.start()
@@ -112,7 +112,7 @@ class Crawler:
 
     def __crawl_post(self, board, index):
         print('[crawler] crawling', '[' + board + ']', index)
-        status = PTT.ErrorCode.UnknowError
+        status = PTT.ErrorCode.UnknownError
         while status not in Crawler.SUCCESS_OR_DELETED:
             thread = threading.Timer(Crawler.TIMEOUT, self.__ptt.logout)
             thread.start()

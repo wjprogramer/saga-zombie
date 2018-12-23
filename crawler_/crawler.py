@@ -164,8 +164,7 @@ class Crawler:
             self.__ptt = PTT.Library(
                 ID=self.__configs.username,
                 Password=self.__configs.password,
-                kickOtherLogin=self.__configs.kick_others,
-                PreWait=0.1, EveryWait=0.2, MaxEveryWait=1, MinEveryWait=1)
+                kickOtherLogin=self.__configs.kick_others)
             ptt = self.__ptt
 
             timer = threading.Timer(Crawler.TIMEOUT, ptt.logout)

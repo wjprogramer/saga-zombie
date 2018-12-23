@@ -36,7 +36,7 @@ class Module(BaseModule):
     def required_param(self):
         return (
             RequiredParam('begining_day', int, 1),
-            RequiredParam('endding_day', int, 0)
+            RequiredParam('ending_day', int, 0)
         )
 
     @staticmethod
@@ -132,16 +132,16 @@ WHERE `post` IN (
 
         params = self.get_params()
         begining_day = params[0]
-        endding_day = params[1]
-        if endding_day < 0 or begining_day < endding_day:
+        ending_day = params[1]
+        if ending_day < 0 or begining_day < ending_day:
             return {}
-        if begining_day - endding_day > 30:
-            endding_day = begining_day - 30
+        if begining_day - ending_day > 30:
+            ending_day = begining_day - 30
 
         result = Counter()
 
         # compute the result
-        for day in range(endding_day, begining_day + 1):
+        for day in range(ending_day, begining_day + 1):
             day_cache = Module.__get_day_cache(day)
 
             counter = Module.__get_counter(self.db_handler, day, day_cache)

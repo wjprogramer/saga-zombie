@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>HeatMap測試</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="i'Analyseur%20-%20HeatMap%20%20realtw_files/bootstrap.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="i'Analyseur%20-%20HeatMap%20%20realtw_files/user_style.css">
+
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+	
+	<script src="i'Analyseur%20-%20HeatMap%20%20realtw_files/jquery-1.js"></script>
+  	<script src="i'Analyseur%20-%20HeatMap%20%20realtw_files/bootstrap.js"></script>
+
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+    <!-- <script async="" src="i'Analyseur%20-%20HeatMap%20%20realtw_files/js"></script> -->
+    <script>
+    // window.dataLayer = window.dataLayer || [];
+    //   function gtag(){dataLayer.push(arguments);}
+    //   gtag('js', new Date());
+
+    //   gtag('config', 'UA-126226961-1');
+    </script>
+
+  	<!-- -- Hotjar Tracking Code for https://www.ianalyseur.org/ -- -->
+	<script>
+      // (function(h,o,t,j,a,r){
+      //     h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+      //     h._hjSettings={hjid:1032788,hjsv:6};
+      //     a=o.getElementsByTagName('head')[0];
+      //     r=o.createElement('script');r.async=1;
+      //     r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+      //     a.appendChild(r);
+      // })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+	</script>
+	<!-- <script async="" src="i'Analyseur%20-%20HeatMap%20%20realtw_files/hotjar-1032788.js"></script> -->
+
+	<!-- -- Mixpanel -- -->
+	<!-- <script src="js/mixpanel.js"></script> -->
+	<!-- <script type="text/javascript" async="" src="i'Analyseur%20-%20HeatMap%20%20realtw_files/mixpanel-2-latest.js"></script> -->
+
+	<script src="i'Analyseur - HeatMap  realtw_files/d3.js"></script>
+</head>
+<body>
+	
+
+
+	<div>
+		
+	</div>
+
+	<script>
+		var myData = [1,2,3,4,5,6];
+		d3.select('body')
+    		.selectAll('div')
+	      	.data(myData)
+	      	.enter()
+	      	.append('div')
+	        .text(function(d){return d;}); 
+    </script>
+
+    
+</body>
+</html>

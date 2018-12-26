@@ -1,0 +1,20 @@
+#main_content {
+  margin-right: 50px;
+  margin-left: 50px; }
+
+hr {
+  display: block;
+  height: 1px;
+  border: 0;
+  border-top: 1px solid #ccc;
+  margin: 1em 0;
+  padding: 0; }
+
+#search_input {
+  width: 300px; }
+
+button {
+  margin-top: 10px;
+  margin-right: 10px; }
+
+/*# sourceMappingURL=result.css.map */

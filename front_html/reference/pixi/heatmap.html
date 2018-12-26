@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pixi js</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.8.2/pixi.min.js"></script>
+
+  <style>
+      * {
+        padding: 0; margin: 0;
+      }
+
+      body {
+        background-color: #f3f3f3;
+      }
+
+
+  </style>
+</head>
+<body>
+  <br>
+  <script>
+    // heatmap color
+    var heatmap_colors = [0xFFFFD9, 0xEDF8B1, 0xC7E9B4, 0x7FCDBB, 0x41B6C4, 0x1D91C0, 0x225EA8, 0x253494, 0x081D58]
+
+    var heatmap = [
+        // 一
+        [   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+            0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, ],
+        // 二
+        [   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+            0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, ],
+        // 三
+        [   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+            0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, ],
+        // 四
+        [   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+            0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, ],
+        // 五
+        [   0, 135,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+            0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, ],
+        // 六
+        [   0,   0,  90,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+            0,   0,  80,   0,   0,   0,   0,   0,   0,   0,   0,   0, ],
+        // 日
+        [   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+            0,   0,  70,   0,   0,   0,   0,   0,   0,   0,   0,   0, ]
+    ]
+
+    function getColor(value) {
+      if (value < 2) {
+        return heatmap_colors[0];
+      } else if (value < 4) {
+        return heatmap_colors[1];
+      } else if (value < 5) {
+        return heatmap_colors[2];
+      } else if (value < 7) {
+        return heatmap_colors[3];
+      } else if (value < 26) {
+        return heatmap_colors[4];
+      } else if (value < 62) {
+        return heatmap_colors[5];
+      } else if (value < 99) {
+        return heatmap_colors[6];
+      } else if (value < 135) {
+        return heatmap_colors[7];
+      } else {
+        return heatmap_colors[8]
+      }
+    }
+
+    // Aliases
+    let Application = PIXI.Application,
+        Container = PIXI.Container,
+        loader = PIXI.loader,
+        resources = PIXI.loader.resources,
+        TextureCache = PIXI.utils.TextureCache,
+        Sprite = PIXI.Sprite,
+        Rectangle = PIXI.Rectangle,
+        Graphics = PIXI.Graphics,
+        Text = PIXI.Text;
+
+
+    let type = "WebGL"
+    if(!PIXI.utils.isWebGLSupported()){
+      type = "canvas"
+    }
+
+    PIXI.utils.sayHello(type)
+
+    //Create a Pixi Application
+    let app = new PIXI.Application({
+        width: 1424,         // default: 800
+        height: 512,        // default: 600
+        antialias: true,    // default: false
+        transparent: true, // default: false 透明度
+        resolution: 1,      // default: 1
+        preserveDrawingBuffer: true
+      }
+    );
+
+    app.interactive = true;
+    app.stage.interactive = true;
+    // app.renderer.backgroundColor = 0xF3F3F3; // 061639
+    
+    document.body.appendChild(app.view);
+
+    function setup() {
+
+      // ** set y-axis - day of week
+      var day_x = 15;
+      var day_y = 55;
+      var day = ["月", "火", "水", "木", "金", "土", "日"]
+      let style = new PIXI.TextStyle({
+        fontFamily: "Arial",
+        fontSize: 15,
+        fill: "black"
+      });
+
+      for (i = 0; i < 7; i++) {
+        let message = new Text(day[i], style);
+        message.position.set(day_x, day_y);
+        app.stage.addChild(message);
+
+        day_y += 55;
+      }
+
+      // ** set x-axis - time
+      var time_x = 0;
+      var time_y = 10;
+      var time_gap = 55;
+
+      for (i = 1; i <= 12; i++) {
+        time_x += time_gap;
+
+        let message = new Text(i+"a", style);
+        message.position.set(time_x, time_y);
+        app.stage.addChild(message);
+      }
+
+      for (i = 1; i <= 12; i++) {
+        time_x += time_gap;
+
+        let message = new Text(i+"p", style);
+        message.position.set(time_x, time_y);
+        app.stage.addChild(message);
+      }
+
+      // ** rects
+      var init_x = 40;
+      var x = init_x;
+      var y = 40;
+      var width = 50;
+      var height = 50;
+      var gap = 5;
+
+      for (i = 1; i <= 7; i++) {
+        for (j = 1; j <= 24; j++) {
+          let rectangle = new Graphics();
+          rectangle.beginFill(getColor(heatmap[i - 1][j - 1])) // 填充顏色
+          // rectangle.lineStyle(4, 0xFF3300, 1); // 寬度4 alpha為1
+          rectangle.drawRoundedRect(x, y, width, height, 4);
+          rectangle.endFill(); // 結束繪製
+
+          rectangle.interactive = true;
+          rectangle.hitArea = new PIXI.Circle(50, 50, 50);
+
+          rectangle.mouseover = function(mouseData) {
+            this.alpha = 1;
+          }
+
+          rectangle.mouseout = function(mouseData) {
+            this.alpha = 0;
+          }
+
+          // rectangle.on('mouseout', function (event) {
+            
+          // });
+          // rectangle.on('mousemove', function (event) {
+
+          // });
+
+          app.stage.addChild(rectangle);
+
+          x += width + gap;
+        }
+        x = init_x;
+        y += height + gap;
+      }
+
+      
+    } // end setup
+    setup();
+  </script>
+
+  
+</body>
+</html>

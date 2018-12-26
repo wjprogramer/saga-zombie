@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <!-- This file has been downloaded from Bootsnipp.com. Enjoy! -->
+  <title>i'Analyseur - HeatMap: realtw </title>
+  <meta name="Description" content="i'Analyseur 是一個PTT分析平台，針對ID或IP提供整合性且視覺化的分析">
+  <meta name="Keywords" content="網軍分析系統, PTT, 網軍, 分析, 政治文, 選舉, 帶風向, realtw">
+  <meta name="author" content="i'Analyseur">
+
+  <meta property="og:title" content="i'Analyseur - HeatMap: realtw">
+  <meta property="og:description" content="i'Analyseur 是一個PTT分析平台，針對ID或IP提供整合性且視覺化的分析。">
+  <meta property="og:image" content="https://www.ianalyseur.org/static/img/logo.png">
+  <meta property="og:locale" content="zh-TW">
+
+
+  <meta name="twitter:card" content="i'Analyseur">
+  <meta name="twitter:title" content="i'Analyseur - HeatMap: realtw">
+  <meta name="twitter:description" content="i'Analyseur 是一個PTT分析平台，針對ID或IP提供整合性且視覺化的分析。">
+  <meta name="twitter:image" content="https://www.ianalyseur.org/static/img/logo.png">  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="i'Analyseur%20-%20HeatMap%20%20realtw_files/user_style.css">
+  <link href="i'Analyseur%20-%20HeatMap%20%20realtw_files/bootstrap.css" rel="stylesheet">
+  <style type="text/css">
+    #custom-search-input {
+     /* display: flex;
+      justify-content: center;
+      align-items: center;*/
+      padding: 3px;
+      border: solid 1px #E4E4E4;
+      border-radius: 6px;
+      background-color: #fff;
+    }
+
+    #custom-search-input input {
+     /* display: flex;
+      justify-content: center;
+      align-items: center;*/
+      border: 0;
+      box-shadow: none;
+    }
+
+    #custom-search-input button {
+     /* display: flex;
+      justify-content: center;
+      align-items: center;
+*/
+      margin: 2px 0 0 0;
+      background: none;
+      box-shadow: none;
+      border: 0;
+      color: #666666;
+      padding: 0 8px 0 10px;
+      border-left: solid 1px #ccc;
+    }
+
+    #custom-search-input button:hover {
+      /*display: flex;
+      justify-content: center;
+      align-items: center;*/
+
+      border: 0;
+      box-shadow: none;
+      border-left: solid 1px #ccc;
+    }
+
+    #custom-search-input .glyphicon-search {
+      font-size: 23px;
+    }
+
+    body {
+      background: #f3f3f3 !important;
+    }
+	
+	
+	/*
+ * Globals
+ */
+
+
+
+
+/*
+ * Base structure
+ */
+
+html,
+body {
+  height: 100%;
+
+}
+
+
+/* Extra markup and styles for table-esque vertical and horizontal centering */
+.site-wrapper {
+  display: table;
+  width: 100%;
+  height: 100%; /* For at least Firefox */
+  min-height: 100%;
+ 
+}
+.site-wrapper-inner {
+  display: table-cell;
+  vertical-align: top;
+}
+.cover-container {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+/* Padding for spacing */
+.inner {
+  padding: 30px;
+}
+
+
+/*
+ * Header
+ */
+
+
+@media (min-width: 768px) {
+  .masthead-brand {
+    float: left;
+  }
+  .masthead-nav {
+    float: right;
+  }
+}
+
+
+/*
+ * Cover
+ */
+
+.cover {
+  padding: 0 20px;
+}
+.cover .btn-lg {
+  padding: 10px 20px;
+  font-weight: bold;
+}
+
+
+/*
+ * Footer
+ */
+
+.mastfoot {
+  color: #999; /* IE8 proofing */
+  color: rgba(255,255,255,.5);
+}
+@media (max-width:767px){
+.hidmob{
+display:none;
+}
+}
+
+/*
+ * Affix and center
+ */
+
+@media (min-width: 768px) {
+  /* Pull out the header and footer */
+  .masthead {
+    position: fixed;
+    top: 0;
+  }
+  .mastfoot {
+    position: fixed;
+    bottom: 0;
+  }
+  /* Start the vertical centering */
+  .site-wrapper-inner {
+    vertical-align: middle;
+  }
+  /* Handle the widths */
+  .masthead,
+  .mastfoot,
+  .cover-container {
+    width: 100%; /* Must be percentage or pixels for horizontal alignment */
+  }
+}
+
+@media (min-width: 992px) {
+  .masthead,
+  .mastfoot,
+  .cover-container {
+    width: 700px;
+  }
+}
+
+  </style>
+  <script type="text/javascript" async="" src="i'Analyseur%20-%20HeatMap%20%20realtw_files/mixpanel-2-latest.js"></script><script src="i'Analyseur%20-%20HeatMap%20%20realtw_files/jquery-1.js"></script>
+  <script src="i'Analyseur%20-%20HeatMap%20%20realtw_files/bootstrap.js"></script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async="" src="i'Analyseur%20-%20HeatMap%20%20realtw_files/js"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-126226961-1');
+    </script>
+    <!-- start Mixpanel --><script type="text/javascript">(function(e,a){if(!a.__SV){var b=window;try{var c,l,i,j=b.location,g=j.hash;c=function(a,b){return(l=a.match(RegExp(b+"=([^&]*)")))?l[1]:null};g&&c(g,"state")&&(i=JSON.parse(decodeURIComponent(c(g,"state"))),"mpeditor"===i.action&&(b.sessionStorage.setItem("_mpcehash",g),history.replaceState(i.desiredHash||"",e.title,j.pathname+j.search)))}catch(m){}var k,h;window.mixpanel=a;a._i=[];a.init=function(b,c,f){function e(b,a){var c=a.split(".");2==c.length&&(b=b[c[0]],a=c[1]);b[a]=function(){b.push([a].concat(Array.prototype.slice.call(arguments,
+    0)))}}var d=a;"undefined"!==typeof f?d=a[f]=[]:f="mixpanel";d.people=d.people||[];d.toString=function(b){var a="mixpanel";"mixpanel"!==f&&(a+="."+f);b||(a+=" (stub)");return a};d.people.toString=function(){return d.toString(1)+".people (stub)"};k="disable time_event track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config reset opt_in_tracking opt_out_tracking has_opted_in_tracking has_opted_out_tracking clear_opt_in_out_tracking people.set people.set_once people.unset people.increment people.append people.union people.track_charge people.clear_charges people.delete_user".split(" ");
+    for(h=0;h<k.length;h++)e(d,k[h]);a._i.push([b,c,f])};a.__SV=1.2;b=e.createElement("script");b.type="text/javascript";b.async=!0;b.src="undefined"!==typeof MIXPANEL_CUSTOM_LIB_URL?MIXPANEL_CUSTOM_LIB_URL:"file:"===e.location.protocol&&"//cdn4.mxpnl.com/libs/mixpanel-2-latest.min.js".match(/^\/\//)?"https://cdn4.mxpnl.com/libs/mixpanel-2-latest.min.js":"//cdn4.mxpnl.com/libs/mixpanel-2-latest.min.js";c=e.getElementsByTagName("script")[0];c.parentNode.insertBefore(b,c)}})(document,window.mixpanel||[]);
+    mixpanel.init("e61f2a81c37d91c1e5fe68a0970b79fc");</script><!-- end Mixpanel -->    
+  <!-- Hotjar Tracking Code for https://www.ianalyseur.org/ -->
+  <script>
+      (function(h,o,t,j,a,r){
+          h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+          h._hjSettings={hjid:1032788,hjsv:6};
+          a=o.getElementsByTagName('head')[0];
+          r=o.createElement('script');r.async=1;
+          r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+          a.appendChild(r);
+      })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+  </script><script async="" src="i'Analyseur%20-%20HeatMap%20%20realtw_files/hotjar-1032788.js"></script>
+<script src="i'Analyseur%20-%20HeatMap%20%20realtw_files/embed.js" data-timestamp="1544195643022"></script><link rel="prefetch" as="style" href="i'Analyseur%20-%20HeatMap%20%20realtw_files/a_data/lounge.css"><link rel="prefetch" as="script" href="i'Analyseur%20-%20HeatMap%20%20realtw_files/a_data/common.js"><link rel="prefetch" as="script" href="i'Analyseur%20-%20HeatMap%20%20realtw_files/a_data/lounge.js"><link rel="prefetch" as="script" href="i'Analyseur%20-%20HeatMap%20%20realtw_files/a_data_003/config.js"><script src="i'Analyseur%20-%20HeatMap%20%20realtw_files/alfalfa_min.js" async="" charset="UTF-8"></script></head>
+<body>
+
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="https://www.ianalyseur.org/">i<font color="#DD4132">'</font>Analyseur</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+
+        <form class="navbar-form navbar-right" method="POST" action="/">
+          <input id="csrf_token" name="csrf_token" type="hidden" value="IjllZGYyNDEwMjcxZmZkNTA1NzcwNGM2MzFmZjYyOGU4MGQ0MmU1N2Ii.Duwfnw.L-XLJoUlPyvxZfvtFnVenpAFVSE">
+          <div class="form-group">
+            <input type="text" name="keyword" class="form-control" placeholder="搜尋 IP 或 ID">
+          </div>
+          <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+        </form>
+        <ul class="nav navbar-nav navbar-right">
+          <!-- <li><a href="/wanted/list/"><font color="#C70039">[特別企劃]大網賊時代</font></a></li> -->
+          <li><a href="https://www.ianalyseur.org/trend/"><font color="#C70039">[爆文警示器]</font></a></li> 
+          <li><a href="http://bit.ly/2CYKf8k">自訂關鍵字</a></li> 
+          <li><a href="http://bit.ly/2yBJkqB">錯誤回報</a></li>                    
+          <li><a href="https://www.ianalyseur.org/faq/">FAQ</a></li>          
+          <li><a href="mailto:ianalyseur.tw@gmail.com" target="_top">Contact</a></li>
+        </ul>
+      </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+  </nav>
+
+<br><br><br> 
+
+<div class="graph">
+        <!-- <div class="graphTitle">HeatMap Chart</div> -->
+        <div id="heatmap"><svg width="1536" height="564"><g transform="translate(150,100)"><text x="693" y="-75" text-anchor="middle" style="font-size: 18px;" class="h1">realtw</text><a xlink:href="/user/realtw/"><text x="231" y="-50" text-anchor="middle" class="a">關聯圖</text></a><a xlink:href="/wordcloud/realtw/"><text x="519.75" y="-50" text-anchor="middle" class="a">文字雲</text></a><a xlink:href="https://pttweb.tw/user/realtw/gossiping/" target="_blank"><text x="866.25" y="-50" text-anchor="middle" class="a">文章列表</text></a><a xlink:href="/p_card/"><text x="1212.75" y="-50" text-anchor="middle" class="a">抽P卡</text></a><text x="0" y="0" style="text-anchor: end; font-size: 18px;" transform="translate(-6,30.666666666666668)" class="dayLabel mono axis axis-workweek">Mo</text><text x="0" y="46" style="text-anchor: end; font-size: 18px;" transform="translate(-6,30.666666666666668)" class="dayLabel mono axis axis-workweek">Tu</text><text x="0" y="92" style="text-anchor: end; font-size: 18px;" transform="translate(-6,30.666666666666668)" class="dayLabel mono axis axis-workweek">We</text><text x="0" y="138" style="text-anchor: end; font-size: 18px;" transform="translate(-6,30.666666666666668)" class="dayLabel mono axis axis-workweek">Th</text><text x="0" y="184" style="text-anchor: end; font-size: 18px;" transform="translate(-6,30.666666666666668)" class="dayLabel mono axis axis-workweek">Fr</text><text x="0" y="230" style="text-anchor: end; font-size: 18px;" transform="translate(-6,30.666666666666668)" class="dayLabel mono axis">Sa</text><text x="0" y="276" style="text-anchor: end; font-size: 18px;" transform="translate(-6,30.666666666666668)" class="dayLabel mono axis">Su</text><text x="0" y="0" style="text-anchor: middle; font-size: 18px;" transform="translate(23, -6)" class="timeLabel mono axis">1a</text><text x="46" y="0" style="text-anchor: middle; font-size: 18px;" transform="translate(23, -6)" class="timeLabel mono axis">2a</text><text x="92" y="0" style="text-anchor: middle; font-size: 18px;" transform="translate(23, -6)" class="timeLabel mono axis">3a</text><text x="138" y="0" style="text-anchor: middle; font-size: 18px;" transform="translate(23, -6)" class="timeLabel mono axis">4a</text><text x="184" y="0" style="text-anchor: middle; font-size: 18px;" transform="translate(23, -6)" class="timeLabel mono axis">5a</text><text x="230" y="0" style="text-anchor: middle; font-size: 18px;" transform="translate(23, -6)" class="timeLabel mono axis">6a</text><text x="276" y="0" style="text-anchor: middle; font-size: 18px;" transform="translate(23, -6)" class="timeLabel mono axis">7a</text><text x="322" y="0" style="text-anchor: middle; font-size: 18px;" transform="translate(23, -6)" class="timeLabel mono axis axis-worktime">8a</text><text x="368" y="0" style="text-anchor: middle; font-size: 18px;" transform="translate(23, -6)" class="timeLabel mono axis axis-worktime">9a</text><text x="414" y="0" style="text-anchor: middle; font-size: 18px;" transform="translate(23, -6)" class="timeLabel mono axis axis-worktime">10a</text><text x="460" y="0" style="text-anchor: middle; font-size: 18px;" transform="translate(23, -6)" class="timeLabel mono axis axis-worktime">11a</text><text x="506" y="0" style="text-anchor: middle; font-size: 18px;" transform="translate(23, -6)" class="timeLabel mono axis axis-worktime">12a</text><text x="552" y="0" style="text-anchor: middle; font-size: 18px;" transform="translate(23, -6)" class="timeLabel mono axis axis-worktime">1p</text><text x="598" y="0" style="text-anchor: middle; font-size: 18px;" transform="translate(23, -6)" class="timeLabel mono axis axis-worktime">2p</text><text x="644" y="0" style="text-anchor: middle; font-size: 18px;" transform="translate(23, -6)" class="timeLabel mono axis axis-worktime">3p</text><text x="690" y="0" style="text-anchor: middle; font-size: 18px;" transform="translate(23, -6)" class="timeLabel mono axis axis-worktime">4p</text><text x="736" y="0" style="text-anchor: middle; font-size: 18px;" transform="translate(23, -6)" class="timeLabel mono axis axis-worktime">5p</text><text x="782" y="0" style="text-anchor: middle; font-size: 18px;" transform="translate(23, -6)" class="timeLabel mono axis axis-worktime">6p</text><text x="828" y="0" style="text-anchor: middle; font-size: 18px;" transform="translate(23, -6)" class="timeLabel mono axis">7p</text><text x="874" y="0" style="text-anchor: middle; font-size: 18px;" transform="translate(23, -6)" class="timeLabel mono axis">8p</text><text x="920" y="0" style="text-anchor: middle; font-size: 18px;" transform="translate(23, -6)" class="timeLabel mono axis">9p</text><text x="966" y="0" style="text-anchor: middle; font-size: 18px;" transform="translate(23, -6)" class="timeLabel mono axis">10p</text><text x="1012" y="0" style="text-anchor: middle; font-size: 18px;" transform="translate(23, -6)" class="timeLabel mono axis">11p</text><text x="1058" y="0" style="text-anchor: middle; font-size: 18px;" transform="translate(23, -6)" class="timeLabel mono axis">12p</text><rect x="0" y="0" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(199, 233, 180);"></rect><rect x="46" y="0" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(199, 233, 180);"></rect><rect x="92" y="0" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="138" y="0" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(34, 94, 168);"></rect><rect x="184" y="0" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="230" y="0" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="276" y="0" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="322" y="0" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(237, 248, 177);"></rect><rect x="368" y="0" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="414" y="0" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="460" y="0" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="506" y="0" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="552" y="0" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="598" y="0" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="644" y="0" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(37, 52, 148);"></rect><rect x="690" y="0" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(37, 52, 148);"></rect><rect x="736" y="0" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="782" y="0" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="828" y="0" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="874" y="0" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(34, 94, 168);"></rect><rect x="920" y="0" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(34, 94, 168);"></rect><rect x="966" y="0" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="1012" y="0" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(199, 233, 180);"></rect><rect x="1058" y="0" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(199, 233, 180);"></rect><rect x="0" y="46" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(237, 248, 177);"></rect><rect x="46" y="46" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="92" y="46" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="138" y="46" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="184" y="46" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="230" y="46" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="276" y="46" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="322" y="46" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="368" y="46" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="414" y="46" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="460" y="46" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(34, 94, 168);"></rect><rect x="506" y="46" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="552" y="46" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(37, 52, 148);"></rect><rect x="598" y="46" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="644" y="46" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="690" y="46" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(127, 205, 187);"></rect><rect x="736" y="46" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="782" y="46" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="828" y="46" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(127, 205, 187);"></rect><rect x="874" y="46" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="920" y="46" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(199, 233, 180);"></rect><rect x="966" y="46" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="1012" y="46" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(199, 233, 180);"></rect><rect x="1058" y="46" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(199, 233, 180);"></rect><rect x="0" y="92" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="46" y="92" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="92" y="92" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(237, 248, 177);"></rect><rect x="138" y="92" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(199, 233, 180);"></rect><rect x="184" y="92" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="230" y="92" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="276" y="92" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="322" y="92" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(237, 248, 177);"></rect><rect x="368" y="92" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="414" y="92" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="460" y="92" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="506" y="92" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(127, 205, 187);"></rect><rect x="552" y="92" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="598" y="92" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="644" y="92" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(127, 205, 187);"></rect><rect x="690" y="92" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="736" y="92" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="782" y="92" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="828" y="92" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="874" y="92" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="920" y="92" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(237, 248, 177);"></rect><rect x="966" y="92" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="1012" y="92" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="1058" y="92" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="0" y="138" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(34, 94, 168);"></rect><rect x="46" y="138" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(37, 52, 148);"></rect><rect x="92" y="138" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="138" y="138" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="184" y="138" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="230" y="138" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="276" y="138" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="322" y="138" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="368" y="138" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(199, 233, 180);"></rect><rect x="414" y="138" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="460" y="138" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(37, 52, 148);"></rect><rect x="506" y="138" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="552" y="138" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="598" y="138" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="644" y="138" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="690" y="138" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="736" y="138" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="782" y="138" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(8, 29, 88);"></rect><rect x="828" y="138" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="874" y="138" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="920" y="138" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="966" y="138" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="1012" y="138" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(34, 94, 168);"></rect><rect x="1058" y="138" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="0" y="184" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="46" y="184" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="92" y="184" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(199, 233, 180);"></rect><rect x="138" y="184" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="184" y="184" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="230" y="184" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="276" y="184" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="322" y="184" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="368" y="184" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="414" y="184" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(199, 233, 180);"></rect><rect x="460" y="184" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="506" y="184" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="552" y="184" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="598" y="184" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="644" y="184" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(34, 94, 168);"></rect><rect x="690" y="184" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="736" y="184" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="782" y="184" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="828" y="184" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="874" y="184" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(237, 248, 177);"></rect><rect x="920" y="184" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="966" y="184" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(237, 248, 177);"></rect><rect x="1012" y="184" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(127, 205, 187);"></rect><rect x="1058" y="184" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="0" y="230" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="46" y="230" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(199, 233, 180);"></rect><rect x="92" y="230" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="138" y="230" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="184" y="230" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="230" y="230" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="276" y="230" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="322" y="230" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="368" y="230" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="414" y="230" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="460" y="230" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(8, 29, 88);"></rect><rect x="506" y="230" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(8, 29, 88);"></rect><rect x="552" y="230" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(37, 52, 148);"></rect><rect x="598" y="230" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(34, 94, 168);"></rect><rect x="644" y="230" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="690" y="230" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="736" y="230" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(34, 94, 168);"></rect><rect x="782" y="230" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="828" y="230" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="874" y="230" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(199, 233, 180);"></rect><rect x="920" y="230" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="966" y="230" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="1012" y="230" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="1058" y="230" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="0" y="276" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="46" y="276" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="92" y="276" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="138" y="276" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="184" y="276" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="230" y="276" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="276" y="276" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(255, 255, 217);"></rect><rect x="322" y="276" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(237, 248, 177);"></rect><rect x="368" y="276" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(34, 94, 168);"></rect><rect x="414" y="276" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="460" y="276" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(34, 94, 168);"></rect><rect x="506" y="276" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(34, 94, 168);"></rect><rect x="552" y="276" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(34, 94, 168);"></rect><rect x="598" y="276" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="644" y="276" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="690" y="276" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="736" y="276" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="782" y="276" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="828" y="276" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="874" y="276" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(29, 145, 192);"></rect><rect x="920" y="276" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(65, 182, 196);"></rect><rect x="966" y="276" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(237, 248, 177);"></rect><rect x="1012" y="276" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(199, 233, 180);"></rect><rect x="1058" y="276" rx="4" ry="4" class="hour bordered" width="46" height="46" style="fill: rgb(237, 248, 177);"></rect><g class="legend"><rect x="0" y="414" width="92" height="23" style="fill: rgb(255, 255, 217);"></rect><text class="mono" x="0" y="460">&gt;= 0</text></g><g class="legend"><rect x="92" y="414" width="92" height="23" style="fill: rgb(237, 248, 177);"></rect><text class="mono" x="92" y="460">&gt;= 2</text></g><g class="legend"><rect x="184" y="414" width="92" height="23" style="fill: rgb(199, 233, 180);"></rect><text class="mono" x="184" y="460">&gt;= 4</text></g><g class="legend"><rect x="276" y="414" width="92" height="23" style="fill: rgb(127, 205, 187);"></rect><text class="mono" x="276" y="460">&gt;= 5</text></g><g class="legend"><rect x="368" y="414" width="92" height="23" style="fill: rgb(65, 182, 196);"></rect><text class="mono" x="368" y="460">&gt;= 7</text></g><g class="legend"><rect x="460" y="414" width="92" height="23" style="fill: rgb(29, 145, 192);"></rect><text class="mono" x="460" y="460">&gt;= 26</text></g><g class="legend"><rect x="552" y="414" width="92" height="23" style="fill: rgb(34, 94, 168);"></rect><text class="mono" x="552" y="460">&gt;= 62</text></g><g class="legend"><rect x="644" y="414" width="92" height="23" style="fill: rgb(37, 52, 148);"></rect><text class="mono" x="644" y="460">&gt;= 99</text></g><g class="legend"><rect x="736" y="414" width="92" height="23" style="fill: rgb(8, 29, 88);"></rect><text class="mono" x="736" y="460">&gt;= 135</text></g></g></svg></div>
+        
+</div>
+
+<div class="tooltip" style="left: 505px; top: 480px; display: none;"><div class="tooltip-title">Sunday : 8am</div><div class="tooltip-value"> 2</div></div>
+
+
+<br>
+
+<div id="disqus_thread"><iframe id="dsq-app572" name="dsq-app572" allowtransparency="true" scrolling="no" tabindex="0" title="Disqus" style="width: 1px !important; min-width: 100% !important; border: medium none !important; overflow: hidden !important; height: 646px !important;" src="i'Analyseur%20-%20HeatMap%20%20realtw_files/a.html" horizontalscrolling="no" verticalscrolling="no" width="100%" frameborder="0"></iframe></div>
+<script>
+
+
+var disqus_config = function () {
+this.page.url = "https://www.ianalyseur.org/heatmap/realtw/"; 
+this.page.identifier = "heatmap_realtw"; 
+};
+
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://ianalyseur.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  
+
+  
+  <script type="text/javascript">
+    var userId = localStorage.getItem('userId');
+    if (!userId){
+      userId = Math.round(Math.random() * 10000000000000000)
+      userId = userId.toString()
+      localStorage.setItem('userId', userId)
+    }
+    mixpanel.identify(userId);
+    mixpanel.people.set_once('$first_name', userId);
+    mixpanel.track("User", {
+        "query_id": 'realtw'
+    });
+  </script>
+  <script src="i'Analyseur%20-%20HeatMap%20%20realtw_files/d3.js"></script>
+  <script src="i'Analyseur%20-%20HeatMap%20%20realtw_files/a_005.html"></script>
+  <script src="i'Analyseur%20-%20HeatMap%20%20realtw_files/a_004.html"></script>
+  
+  
+<iframe style="display: none;"></iframe><iframe id="dsq-app575" name="dsq-app575" allowtransparency="true" scrolling="no" tabindex="0" title="Disqus" style="width: 1px !important; min-width: 100% !important; border: medium none !important; overflow: hidden !important; height: 100% !important; position: fixed !important; top: 0px !important; right: 0px !important; left: auto !important; bottom: auto !important; z-index: 2147483647 !important; display: none !important;" src="i'Analyseur%20-%20HeatMap%20%20realtw_files/a_003.html" width="100%" frameborder="0"></iframe></body></html>

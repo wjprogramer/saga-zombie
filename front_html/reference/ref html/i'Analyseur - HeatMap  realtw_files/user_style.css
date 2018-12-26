@@ -1,0 +1,109 @@
+.line {
+    fill: none;
+    stroke: #ffab00;
+    stroke-width: 2;
+}
+
+/* Style the dots by assigning a fill and stroke */
+.dot {
+    fill: #50442b;
+    stroke: #fff;
+}
+label{
+    text-align: center;
+    
+}.tooltip-title {
+	font: 16px sans-serif;
+	text-align: left;
+	width: 100%;
+	
+}
+.tooltip-value {
+    font-size: 16px;
+	text-align: left; 
+    padding-top: 0.1rem;
+
+}	
+.tooltip{
+	position: absolute;
+	display: none;
+	width: auto;
+	height: auto;
+	background: none repeat scroll 0 0 #f2f2f2;
+	border: 0 none;
+	border-radius: 8px 8px 8px 8px;
+	box-shadow: -3px 3px 15px #888888;
+	color: black;
+	font: 12px sans-serif;
+	padding: 10px;
+	text-align: left;
+	opacity:100 !important;
+	padding-bottom: 0px;
+	z-index: 9999;
+}
+.graphTitle{
+    text-align: center;
+background: steelblue;
+color: white;
+padding: 2px;
+border-radius: 4px;
+font-size: 18px;
+}
+.pointer{
+    cursor: pointer;
+}
+path { 
+	stroke: steelblue;
+	stroke-width: 2;
+	fill: none;
+  }
+  .h1 {
+	color: #999999;
+	font-family: arial, sans-serif;
+	font-size: 16px;
+	font-weight: bold;
+	margin-top: 0px;
+	margin-bottom: 1px;
+	}
+  .axis path,
+  .axis line {
+	  fill: none;
+	  stroke: grey;
+	  stroke-width: 1;
+	  shape-rendering: crispEdges;
+  }.overlay {
+	fill: none;
+	pointer-events: all;
+  }
+  .hover-line {
+	stroke: steelblue;
+	stroke-width: 2px;
+	stroke-dasharray: 3,3;
+  }
+  .hover-text {
+	  fill:steelblue;
+  }
+rect.bordered {
+	stroke: #E6E6E6;
+	stroke-width:2px;   
+  }
+
+  text.mono {
+	font-size: 9pt;
+	font-family: Consolas, courier;
+	fill: #aaa;
+  }
+
+  text.axis-workweek {
+	fill: #000;
+  }
+
+  text.axis-worktime {
+	fill: #000;
+  }
+  .a {
+	text-decoration: underline;
+	fill:blue;
+	font-size:16px;
+}
+

@@ -35,7 +35,7 @@ class Module(BaseModule):
 
     def required_param(self):
         return (
-            RequiredParam('begining_day', int, 1),
+            RequiredParam('beginning_day', int, 1),
             RequiredParam('ending_day', int, 0)
         )
 
@@ -90,7 +90,7 @@ WHERE `post` IN (
     def __get_counter(db_handler, day, day_cache):
         current = get_current_time()
 
-        if day < 32:
+        if day < 360:
             counter = day_cache.counter
             if counter is not None:
                 return counter
@@ -108,13 +108,13 @@ WHERE `post` IN (
             try:
                 print('[module get_word_freq] in caching thread routine')
                 Module.__free_cache()
-                for day in range(0, 32):
+                for day in range(0, 360):
                     day_cache = Module.__get_day_cache(day)
                     with day_cache.lock:
                         Module.__update_counter(db_handler, day, day_cache)
                 sleep(Module.ROUTINE_PERIOD)
-            except KeyboardInterrupt:
-                pass
+            except KeyboardInterrupt as e:
+                raise e
             except:
                 print_exc()
 
@@ -131,17 +131,17 @@ WHERE `post` IN (
         Module.__check_caching_thread(self.db_handler)
 
         params = self.get_params()
-        begining_day = params[0]
+        beginning_day = params[0]
         ending_day = params[1]
-        if ending_day < 0 or begining_day < ending_day:
+        if ending_day < 0 or beginning_day < ending_day:
             return {}
-        if begining_day - ending_day > 30:
-            ending_day = begining_day - 30
+        if beginning_day - ending_day > 30:
+            ending_day = beginning_day - 30
 
         result = Counter()
 
         # compute the result
-        for day in range(ending_day, begining_day + 1):
+        for day in range(ending_day, beginning_day + 1):
             day_cache = Module.__get_day_cache(day)
 
             counter = Module.__get_counter(self.db_handler, day, day_cache)

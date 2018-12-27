@@ -41,79 +41,117 @@ with SQLiteDBHandler('test.db') as db:
 	# do something here
 ```
 
-#### 查詢
+#### HTTP API
 
-##### `__init__(path)`
+##### `get_post_word_freq`
 
-`path` 是 SQLite 檔案路徑
+###### Args
 
-##### `query(q)`
+* `post_id` (required)
 
-如果請求的東西是沒有概括到的就先用這個
+###### Result
 
-##### `get_boards()`
+* list of words
+  * `word` (ex. 科文哲)
+  * `count` (ex. 10)
 
-列出資料庫有包含的看板
+##### `get_word_freq`
 
-##### `get_users()`
+###### Args
 
-列出資料庫有包含的使用者
+* `beginning_day` (optional, default `1`)
+* `ending_day` (optional, default `0`)
 
-##### `get_posts(after: int=0)`
+###### Result
 
-列出所有某個時間點之後的貼文（所有看板），如果沒有指定就列出全部
+* list of pair
+  * `word` (ex. 科文哲)
+  * `count` (ex. 200)
 
-##### `get_pushes(after: int=0)`
+##### `get_users_pushes_count`
 
-列出所有推文（所有看板所有 po 文）
+###### Args
 
-##### `get_board_id(board: str)`
+* `beginning_day` (optional, default `7`)
+* `ending_day` (optional, default `0`)
 
-取的看板在資料庫中所對應的 ID
+###### Result
 
-##### `get_user_id(username: str)`
+* list of pair
+  * `username` (ex. aaab)
+  * `count` (ex. 1600)
 
-取得用戶名在資料庫中對應的 ID
+##### `get_users_posts_count`
 
-##### `get_post(board, index: int)`
+###### Args
 
-透過看板名稱和 index 取得貼文
+* `beginning_day` (optional, default `7`)
+* `ending_day` (optional, default `0`)
 
-##### `get_posts_by_user_id(user_id: int, after: int=0)`
+###### Result
 
-取的某用戶的所有 po 文
+* list of pair
+  * `username` (ex. aaabb)
+  * `count` (ex. 100)
 
-##### `get_posts_by_username(username: str, after: int=0)`
+##### `get_user_pushes_word_freq`
 
-同上
+###### Args
 
-##### `get_posts_by_ip(ip: str)`
+* `username` (required)
 
-取得 IP 下所發表的文章
+* `beginning_day` (optional, default `7`)
 
-##### `get_pushes_by_user_id(user_id: int, after: int=0)`
+* `ending_day` (optional, default `0`)
 
-用戶推文
+###### Result
 
-##### `get_pushes_by_username(username: str, after: int=0)`
+- list of pair
+  - `word` (ex. 科文哲)
+  - `count` (ex. 200)
 
-同上
+##### `get_pushes_by_username`
 
-##### `get_pushes_by_ip(ip: str)`
+###### Args
 
-指定 IP 下的推文
+- `username` (required)
 
-#### 寫入
+- `beginning_day` (optional, default `7`)
 
-##### `insert_or_update_post(post: PostInformation, index: int)`
+- `ending_day` (optional, default `0`)
 
-將文章新增到資料庫中，如果文章已經存在則更新資訊
+###### Result
 
-##### `add_user(user: str)`
+* list of post info
+  * `type`
+  * `content`
+  * `ip`
+  * `date_time`
 
-將用戶加到資料庫中
+##### `get_post_word_freq`
 
-##### `add_board(board: str)`
+###### Args
 
-將看板加到資料庫中
+- `post_id` (required)
 
+###### Result
+
+- list of pair
+  - `word` (ex. 科文哲)
+  - `count` (ex. 200)
+
+##### `get_post_by_post_id`
+
+###### Args
+
+* `post_id` (required)
+
+###### Result
+
+* `board`
+* `author`
+* `date_time`
+* `title`
+* `web_url`
+* `money`
+* `ip`

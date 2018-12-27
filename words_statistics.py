@@ -10,11 +10,13 @@ def cut(string):
         return jieba.cut(string, cut_all=True)
 
 
-def basic_filter(i):
-    a = map(lambda x: x.strip(), i)
-    b = filter(lambda x: len(x) > 1, a)
-    c = filter(lambda x: not x.isnumeric(), b)
+def basic_filter(d):
+    d = map(lambda x: x.strip(), d)
+    d = filter(lambda x: len(x) > 1, d)
+    d = filter(lambda x: not x.isnumeric(), d)
+    d = filter(lambda x: x not in USELESS, d)
     d = filter(lambda x: x not in USELESS, c)
+    d = filter(lambda x: x not in MORE_USELESS_WORDS, c)
     return d
 
 
@@ -56,5 +58,10 @@ USELESS = (
     'jpg',
     'Re',
     'http',
-    'tw'
+    'tw',
+    'from',
+    'to',
 )
+MORE_USELESS_WORDS = (,)
+with open('useless_words.txt') as f:
+    MORE_USELESS_WORDS = tuple(line[:-1] for line in f)

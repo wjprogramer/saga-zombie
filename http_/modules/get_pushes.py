@@ -24,7 +24,7 @@ class Module(BaseModule):
         query_result = self.db_handler.query('''
 SELECT
     `posts`.`post_id` as `post_id`,
--    `pushes`.`type` as `type`,
+    `pushes`.`type` as `type`,
     `users`.`username` as `username`,
     `pushes`.`ip` as `ip`,
     `pushes`.`date_time` as `date_time`

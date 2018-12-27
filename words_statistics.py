@@ -62,6 +62,6 @@ USELESS = (
     'from',
     'to',
 )
-MORE_USELESS_WORDS = (,)
+
 with open('useless_words.txt') as f:
     MORE_USELESS_WORDS = tuple(line[:-1] for line in f)

@@ -2,6 +2,8 @@
 """
 
 from functools import partial
+import os
+import fnmatch
 
 from urllib.parse import urlparse
 from http.server import ThreadingHTTPServer
@@ -61,6 +63,15 @@ class HTTPServer:
     def serve_forever(self):
         """ start serving
         """
+
+        for fn in os.listdir('./http_/modules'):
+            if fnmatch.fnmatch(fn, '*.py'):
+                print('load', __package__ + '.modules.' + fn[:-3])
+                module = module_loader.load(__package__ + '.modules.' + fn[:-3])
+                try:
+                    module.start_caching_thread()
+                except:
+                    pass
 
         self.__is_serving = True
         handler = partial(RequestHandler, self.__db)

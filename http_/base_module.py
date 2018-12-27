@@ -28,6 +28,10 @@ class BaseModule:
     CONTENT_TYPE_JSON = 'application/json'
     ENCODING = 'utf-8'
 
+    @staticmethod
+    def start_caching_thread(db_handler):
+        pass
+
     def __init__(self, request_handler: BaseHTTPRequestHandler, db_handler: SQLiteDBHandler):
         self.request_handler = request_handler
         self.db_handler = db_handler

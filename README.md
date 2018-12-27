@@ -45,30 +45,63 @@ with SQLiteDBHandler('test.db') as db:
 
 ##### `get_post_word_freq`
 
-* `post_id`
+###### Args
+
+* `post_id` (required)
 
 ##### `get_word_freq`
 
-* `beginning_day`
+###### Args
 
-* `ending_day`
+* `beginning_day` (optional, default `1`)
+
+* `ending_day` (optional, default `0`)
 
 ##### `get_users_pushes_count`
 
-* `beginning_day`
+###### Args
 
-* `ending_day`
+* `beginning_day` (optional, default `7`)
+
+* `ending_day` (optional, default `0`)
 
 ##### `get_users_posts_count`
 
-* `beginning_day`
+###### Args
 
-* `ending_day`
+* `beginning_day` (optional, default `7`)
+
+* `ending_day` (optional, default `0`)
 
 ##### `get_user_pushes_word_freq`
 
-`username`
+###### Args
 
-`beginning_day`
+* `username` (required)
 
-`ending_day`
+* `beginning_day` (optional, default `7`)
+
+* `ending_day` (optional, default `0`)
+
+##### `get_pushes_by_username`
+
+###### Args
+
+- `username` (required)
+
+- `beginning_day` (optional, default `7`)
+
+- `ending_day` (optional, default `0`)
+- 
+
+##### `get_post_word_freq`
+
+###### Args
+
+- `post_id` (required)
+
+##### `get_post_by_post_id`
+
+###### Args
+
+* `post_id` (required)

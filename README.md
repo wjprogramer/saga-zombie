@@ -43,7 +43,7 @@ with SQLiteDBHandler('test.db') as db:
 
 #### HTTP API
 
-##### `get_post_word_freq`
+##### `get_post_words_freq`
 
 ###### Args
 
@@ -55,7 +55,7 @@ with SQLiteDBHandler('test.db') as db:
   * `word` (ex. 科文哲)
   * `count` (ex. 10)
 
-##### `get_word_freq`
+##### `get_words_freq`
 
 ###### Args
 
@@ -64,7 +64,7 @@ with SQLiteDBHandler('test.db') as db:
 
 ###### Result
 
-* list of pair
+* `statastic` (list of pairs)
   * `word` (ex. 科文哲)
   * `count` (ex. 200)
 
@@ -94,7 +94,7 @@ with SQLiteDBHandler('test.db') as db:
   * `username` (ex. aaabb)
   * `count` (ex. 100)
 
-##### `get_user_pushes_word_freq`
+##### `get_user_pushes_words_freq`
 
 ###### Args
 

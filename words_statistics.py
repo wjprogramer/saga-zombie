@@ -15,8 +15,8 @@ def basic_filter(d):
     d = filter(lambda x: len(x) > 1, d)
     d = filter(lambda x: not x.isnumeric(), d)
     d = filter(lambda x: x not in USELESS, d)
-    d = filter(lambda x: x not in USELESS, c)
-    d = filter(lambda x: x not in MORE_USELESS_WORDS, c)
+    d = filter(lambda x: x not in USELESS, d)
+    d = filter(lambda x: x not in MORE_USELESS_WORDS, d)
     return d
 
 

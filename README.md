@@ -41,79 +41,34 @@ with SQLiteDBHandler('test.db') as db:
 	# do something here
 ```
 
-#### 查詢
+#### HTTP API
 
-##### `__init__(path)`
+##### `get_post_word_freq`
 
-`path` 是 SQLite 檔案路徑
+* `post_id`
 
-##### `query(q)`
+##### `get_word_freq`
 
-如果請求的東西是沒有概括到的就先用這個
+* `beginning_day`
 
-##### `get_boards()`
+* `ending_day`
 
-列出資料庫有包含的看板
+##### `get_users_pushes_count`
 
-##### `get_users()`
+* `beginning_day`
 
-列出資料庫有包含的使用者
+* `ending_day`
 
-##### `get_posts(after: int=0)`
+##### `get_users_posts_count`
 
-列出所有某個時間點之後的貼文（所有看板），如果沒有指定就列出全部
+* `beginning_day`
 
-##### `get_pushes(after: int=0)`
+* `ending_day`
 
-列出所有推文（所有看板所有 po 文）
+##### `get_user_pushes_word_freq`
 
-##### `get_board_id(board: str)`
+`username`
 
-取的看板在資料庫中所對應的 ID
+`beginning_day`
 
-##### `get_user_id(username: str)`
-
-取得用戶名在資料庫中對應的 ID
-
-##### `get_post(board, index: int)`
-
-透過看板名稱和 index 取得貼文
-
-##### `get_posts_by_user_id(user_id: int, after: int=0)`
-
-取的某用戶的所有 po 文
-
-##### `get_posts_by_username(username: str, after: int=0)`
-
-同上
-
-##### `get_posts_by_ip(ip: str)`
-
-取得 IP 下所發表的文章
-
-##### `get_pushes_by_user_id(user_id: int, after: int=0)`
-
-用戶推文
-
-##### `get_pushes_by_username(username: str, after: int=0)`
-
-同上
-
-##### `get_pushes_by_ip(ip: str)`
-
-指定 IP 下的推文
-
-#### 寫入
-
-##### `insert_or_update_post(post: PostInformation, index: int)`
-
-將文章新增到資料庫中，如果文章已經存在則更新資訊
-
-##### `add_user(user: str)`
-
-將用戶加到資料庫中
-
-##### `add_board(board: str)`
-
-將看板加到資料庫中
-
+`ending_day`

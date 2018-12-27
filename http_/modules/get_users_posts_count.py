@@ -11,8 +11,8 @@ class Module(BaseModule):
 
     def required_param(self):
         return (
-            RequiredParam('beginning_day', int, 7),
-            RequiredParam('ending_day', int, 0)
+            RequiredParam('beginning_day', float, 7),
+            RequiredParam('ending_day', float, 0)
         )
 
     def get_data(self):
@@ -27,8 +27,8 @@ LEFT JOIN `users` ON  `posts`.`author` = `users`.`id`
 WHERE `posts`.`date_time` BETWEEN :time_begin AND :time_end
 GROUP BY `posts`.`author` ;''',
             {
-                'time_begin': current - beginning_day * 86400,
-                'time_end': current - ending_day * 86400
+                'time_begin': float(current - beginning_day * 86400),
+                'time_end': float(current - ending_day * 86400)
             })
 
         kw_result = list()

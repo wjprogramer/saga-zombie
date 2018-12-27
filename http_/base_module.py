@@ -58,7 +58,7 @@ class BaseModule:
 
         try:
             return value_type(self.query[keyword][0])
-        except (IndexError, KeyError, TypeError):
+        except (IndexError, KeyError, TypeError, ValueError):
             return default
 
     def __send_status_code(self, code: int):

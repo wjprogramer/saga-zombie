@@ -15,8 +15,8 @@ class Module(BaseModule):
     def required_param(self):
         return (
             RequiredParam('username'),
-            RequiredParam('beginning_day', int, 7),
-            RequiredParam('ending_day', int, 0)
+            RequiredParam('beginning_day', float, 7),
+            RequiredParam('ending_day', float, 0)
         )
 
     def get_data(self):
@@ -34,8 +34,8 @@ WHERE `author` = (
 ) AND `date_time` BETWEEN :time_begin AND :time_end ;''',
             {
                 'username': username,
-                'time_begin': current - beginning_day * 86400,
-                'time_end': current - ending_day * 86400
+                'time_begin': int(current - beginning_day * 86400),
+                'time_end': int(current - ending_day * 86400)
             })
 
         counter = Counter()

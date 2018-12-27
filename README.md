@@ -49,29 +49,50 @@ with SQLiteDBHandler('test.db') as db:
 
 * `post_id` (required)
 
+###### Result
+
+* list of words
+  * `word` (ex. 科文哲)
+  * `count` (ex. 10)
+
 ##### `get_word_freq`
 
 ###### Args
 
 * `beginning_day` (optional, default `1`)
-
 * `ending_day` (optional, default `0`)
+
+###### Result
+
+* list of pair
+  * `word` (ex. 科文哲)
+  * `count` (ex. 200)
 
 ##### `get_users_pushes_count`
 
 ###### Args
 
 * `beginning_day` (optional, default `7`)
-
 * `ending_day` (optional, default `0`)
+
+###### Result
+
+* list of pair
+  * `username` (ex. aaab)
+  * `count` (ex. 1600)
 
 ##### `get_users_posts_count`
 
 ###### Args
 
 * `beginning_day` (optional, default `7`)
-
 * `ending_day` (optional, default `0`)
+
+###### Result
+
+* list of pair
+  * `username` (ex. aaabb)
+  * `count` (ex. 100)
 
 ##### `get_user_pushes_word_freq`
 
@@ -83,6 +104,12 @@ with SQLiteDBHandler('test.db') as db:
 
 * `ending_day` (optional, default `0`)
 
+###### Result
+
+- list of pair
+  - `word` (ex. 科文哲)
+  - `count` (ex. 200)
+
 ##### `get_pushes_by_username`
 
 ###### Args
@@ -92,7 +119,14 @@ with SQLiteDBHandler('test.db') as db:
 - `beginning_day` (optional, default `7`)
 
 - `ending_day` (optional, default `0`)
-- 
+
+###### Result
+
+* list of post info
+  * `type`
+  * `content`
+  * `ip`
+  * `date_time`
 
 ##### `get_post_word_freq`
 
@@ -100,8 +134,24 @@ with SQLiteDBHandler('test.db') as db:
 
 - `post_id` (required)
 
+###### Result
+
+- list of pair
+  - `word` (ex. 科文哲)
+  - `count` (ex. 200)
+
 ##### `get_post_by_post_id`
 
 ###### Args
 
 * `post_id` (required)
+
+###### Result
+
+* `board`
+* `author`
+* `date_time`
+* `title`
+* `web_url`
+* `money`
+* `ip`

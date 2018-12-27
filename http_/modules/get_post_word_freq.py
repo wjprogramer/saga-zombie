@@ -12,7 +12,9 @@ class Module(BaseModule):
     """
 
     def required_param(self):
-        return (RequiredParam('post_id'),)
+        return (
+            RequiredParam('post_id'),
+        )
 
     def get_data(self):
         post_id = self.get_params()[0]

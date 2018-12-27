@@ -15,16 +15,16 @@ class Module(BaseModule):
     def required_param(self):
         return (
             RequiredParam('username'),
-            RequiredParam('time_begin', int, 604800),
-            RequiredParam('time_end', int, 0)
+            RequiredParam('beginning_day', int, 7),
+            RequiredParam('ending_day', int, 0)
         )
 
     def get_data(self):
         params = self.get_params()
         current = get_current_time()
         username = params[0]
-        time_begin = params[1]
-        time_end = params[2]
+        beginning_day = params[1]
+        ending_day = params[2]
 
         query_result = self.db_handler.query('''
 SELECT `content` FROM `pushes`
@@ -34,8 +34,8 @@ WHERE `author` = (
 ) AND `date_time` BETWEEN :time_begin AND :time_end ;''',
             {
                 'username': username,
-                'time_begin': current - time_begin,
-                'time_end': current - time_end
+                'time_begin': current - beginning_day * 86400,
+                'time_end': current - ending_day * 86400
             })
 
         counter = Counter()

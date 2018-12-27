@@ -29,6 +29,8 @@ class RequestHandler(BaseHTTPRequestHandler):
         print(self.path)
         try:
             module = module_loader.load(RequestHandler.MODULES_PATH + path.replace('/', '.'))
+            if module is None:
+                raise ModuleNotFoundError()
             module.Module(self, self.__db)
         except ModuleNotFoundError as exception:
             print(exception)

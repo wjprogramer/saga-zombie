@@ -1,58 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>大數據期末專題</title>
-
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-
-	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> 
-
-	<link rel="stylesheet" href="css/result.css" />
-
+	<head>
+		<meta charset="UTF-8">
+		<title>大數據期末專題</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+		<link rel="stylesheet" href="css/result.css" />
+		<!-- sankey -->
+		<script src="js/sankey/jquery.js" type="text/javascript"></script>
+		<script src="js/sankey/raphael.js" type="text/javascript"></script>
+		<script src="js/sankey/sankey.js" type="text/javascript"></script>
+		<script src="js/sankey/user_ip.js" type="text/javascript"></script>
+		<script src="js/sankey/control.js" type="text/javascript"></script>
+		<!-- wordcloud -->
+		<script src="https://pulipulichen.github.io/blogger/posts/2016/11/r-text-mining/wordcloud2.js"></script>
+		<!-- pixijs -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.8.2/pixi.min.js"></script>
+	</head>
+	<body>
+		<div id="main_content" class="w3-container w3-light-grey w3-padding" style="">
+			<h1 style="margin-left: 20px;">大數據期末專題</h1>
+			<p>判斷是否為可疑帳號</p>
+			<input id="search" placeholder="eg:abc123123" type="text" autofocus class="w3-input">
+			<button id="changeBut" type="button" name="button" class="w3-button w3-orange" value="以IP進行找尋" onclick="changeText()">以IP進行找尋</button>
+			<button id="idBtn" class="w3-button w3-blue" onclick="search('id')" style="display: inline-block;">搜尋ID</button>
+			<button id="ipBtn" class="w3-button w3-blue" onclick="search('ip')" style="display: none;">搜尋IP</button>
+			
+			<hr>
+			<h3>分析結果</h3>
+			<hr>
+			<h3>使用IP狀況</h3>
+			<div id='sankey' style="width:1000px; margin-right: auto; margin-left: auto; margin-top: 30px;"></div>
+			<hr>
+			<h3>文字雲</h3>
+			<canvas id="word_cloud" class="word_cloud" width="400" height="400" style="margin: auto; display: block;"></canvas>
+			<hr>
+			<h3>作息圖</h3>
+			<div id="a">
+				
+			</div>
+			<div id="heatmap" style="margin: auto;"></div>
+		</div>
+	</body>
+	<!-- wordcloud -->
+	<script src="js/wordcloud/wordcloud.js"></script>
+	<!-- heatmap -->
+	<script src="js/heatmap.js"></script>
+	<!-- ★★★ main ★★★ -->
 	<script src="js/main.js" type="text/javascript"></script>
-
-	<!-- sankey -->
-	<script src="js/sankey/jquery.js" type="text/javascript"></script>
-	<script src="js/sankey/raphael.js" type="text/javascript"></script>
-	<script src="js/sankey/sankey.js" type="text/javascript"></script>
-	<script src="js/sankey/user_ip.js" type="text/javascript"></script>
-	<script src="js/sankey/control.js" type="text/javascript"></script>
-
-</head>
-<body>
-
-	<div id="main_content" class="w3-container w3-light-grey w3-padding" style="">
-		<h1 style="margin-left: 20px;">大數據期末專題</h1>
-
-		<p>判斷是否為可疑帳號</p>
-
-		<input id="search" placeholder="eg:abc123123" type="text" autofocus class="w3-input">
-		<button id="changeBut" type="button" name="button" class="w3-button w3-orange" value="以IP進行找尋" onclick="changeText()">以IP進行找尋</button>
-		<button id="idBtn" class="w3-button w3-blue" onclick="searchID()" style="display: inline-block;">搜尋ID</button>
-		<button id="ipBtn" class="w3-button w3-blue" onclick="searchIP()" style="display: none;">搜尋IP</button>
-		
-		<hr>
-
-		<h3>分析結果</h3>
-
-		<hr>
-
-		<h3>使用IP狀況</h3>
-		<div id='sankey' style="width:1000px; margin-right: auto; margin-left: auto; margin-top: 30px;"></div>
-
-		<hr>
-
-		<h3>文字雲</h3>
-
-		<hr>
-
-		<h3>作息圖</h3>
-
-
-	</div>
-
-    
-	
-</body>
 </html>

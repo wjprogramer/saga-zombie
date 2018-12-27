@@ -1,3 +1,12 @@
+function search(option) {
+	if (option == "ip") {
+		searchIP();
+	} else if (option == "id") {
+		createHeatMap();
+		searchID();
+	}
+}
+
 function changeText(){
 	if(document.getElementById("changeBut").value=="以IP進行找尋")
 	{

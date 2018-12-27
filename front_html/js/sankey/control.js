@@ -43,7 +43,6 @@ function finduserName(userName){
 	for(var i=0;i<data.length;i++){
 		if(data[i][1]==userName)
 		{
-			
 			userIp[userCount] = data[i][0];
 			userAmount[userCount] = data[i][2];
 			userCount++;

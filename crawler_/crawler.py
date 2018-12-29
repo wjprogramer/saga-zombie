@@ -57,8 +57,8 @@ class Crawler:
                             if last_index != -1:
                                 break
                         for index in range(
-                                last_index - page_range.beginning_page,
-                                last_index - page_range.ending_page + 1):
+                                max(1, last_index - page_range.beginning_page),
+                                max(1, last_index - page_range.ending_page + 1)):
                             while not self.__stop:
                                 articles = crawler.parse_articles(
                                     index, index, page_range.board, Crawler.TIMEOUT)

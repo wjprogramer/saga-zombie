@@ -127,6 +127,10 @@ WHERE `post` IN (
                     target=Module.__caching_thread_routine, args=[db_handler], daemon=True)
                 Module.caching_thread.start()
 
+    @staticmethod
+    def start_caching_thread(db_handler):
+        Module.__check_caching_thread(db_handler)
+
     def get_data(self):
         Module.__check_caching_thread(self.db_handler)
 

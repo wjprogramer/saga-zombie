@@ -13,20 +13,33 @@ class Module(BaseModule):
 
     def required_param(self):
         return (
+            RequiredParam('board'),
             RequiredParam('post_id'),
         )
 
     def get_data(self):
-        post_id = self.get_params()[0]
+        board = self.get_params()[0]
+        post_id = self.get_params()[1]
 
         query_result = self.db_handler.query('''
 SELECT `content` FROM `posts_content`
 WHERE `post` = (
     SELECT `id` FROM `posts`
     WHERE `post_id` = :post_id
-) ;''', {'post_id': post_id})
+    AND `board` = (
+        SELECT `id` FROM `boards`
+        WHERE `name` = :board
+    )
+);
+            ''',
+            {
+                'post_id': post_id,
+                'board': board
+            }
+        )
 
         try:
-            return Counter(words_statistics.cut(query_result[0][0]))
+            return Counter(words_statistics.basic_filter(
+                words_statistics.cut(query_result[0][0])))
         except IndexError:
             return {}

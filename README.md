@@ -110,7 +110,7 @@ with SQLiteDBHandler('test.db') as db:
   - `word` (ex. 科文哲)
   - `count` (ex. 200)
 
-##### `get_pushes_by_username`
+##### `get_posts_by_username`
 
 ###### Args
 
@@ -123,6 +123,28 @@ with SQLiteDBHandler('test.db') as db:
 ###### Result
 
 * list of post info
+  * `board`
+  * `post_id`
+  * `date_time`
+  * `title`
+  * `web_url`
+  * `ip`
+
+##### `get_pushes_by_username`
+
+###### Args
+
+- `username` (required)
+
+- `beginning_day` (optional, default `7`)
+
+- `ending_day` (optional, default `0`)
+
+###### Result
+
+* list of pushes info
+  * `board`
+  * `post_id`
   * `type`
   * `content`
   * `ip`
@@ -144,6 +166,8 @@ with SQLiteDBHandler('test.db') as db:
 
 ###### Args
 
+* `board` (required)
+
 * `post_id` (required)
 
 ###### Result
@@ -153,5 +177,21 @@ with SQLiteDBHandler('test.db') as db:
 * `date_time`
 * `title`
 * `web_url`
-* `money`
 * `ip`
+
+##### `get_pushes`
+
+###### Args
+
+- `beginning_day` (optional, default `7`)
+- `ending_day` (optional, default `0`)
+
+###### Result
+
+* list of pushes info
+  * `board`
+  * `post_id`
+  * `type`
+  * `author`
+  * `ip`
+  * `date_time`

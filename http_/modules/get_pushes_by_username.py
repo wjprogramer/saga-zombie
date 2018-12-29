@@ -23,45 +23,40 @@ class Module(BaseModule):
         beginning_day = params[1]
         ending_day = params[2]
 
-        pushes_query_result = self.db_handler.query('''
-SELECT `post`, `type`, `content`, `ip`, `date_time` FROM `pushes`
-WHERE `author` = (
-    SELECT `id` FROM `users` WHERE `username` = :username
-) AND `date_time` BETWEEN :time_begin AND :time_end ;''', {
-    'username': username,
-    'time_begin': int(current - beginning_day * 86400),
-    'time_end': int(current - ending_day * 86400)
-})
+        query_result = self.db_handler.query('''
+SELECT
+    `boards`.`name` as `board`,
+    `posts`.`post_id` as `post_id`,
+    `pushes`.`type` as `type`,
+    `pushes`.`content` as `content`,
+    `pushes`.`ip` as `ip`,
+    `pushes`.`date_time` as `date_time`
+FROM `pushes`
+LEFT JOIN `posts` ON `posts`.`id` = `pushes`.`post`
+LEFT JOIN `boards` ON `boards`.`id` = `posts`.`board`
+WHERE `pushes`.`author` = (
+    SELECT `id` FROM `users`
+    WHERE `username` = :username
+) AND `pushes`.`date_time`
+BETWEEN :time_begin AND :time_end ;
+            ''',
+            {
+                'username': username,
+                'time_begin': int(current - beginning_day * 86400),
+                'time_end': int(current - ending_day * 86400)
+            }
+        )
 
-        posts_query_result = self.db_handler.query('''
-SELECT `id`, `post_id` FROM `posts`
-WHERE `id` IN (
-    SELECT `post` FROM `pushes`
-    WHERE `author` = (
-        SELECT `id` FROM `users` WHERE `username` = :username
-    ) AND `date_time` BETWEEN :time_begin AND :time_end
-);''', {
-    'username': username,
-    'time_begin': current - beginning_day * 86400,
-    'time_end': current - ending_day * 86400
-})
+        result = list()
+        
+        for row in query_result:
+            result.append({
+                'board': row[0],
+                'post_id': row[1],
+                'type': row[2],
+                'content': row[3],
+                'ip': row[4],
+                'date_time': row[5]
+            })
 
-        id_to_post_id = dict()
-        pushes = dict()
-        for row in posts_query_result:
-            id_to_post_id[row[0]] = row[1]
-            pushes[row[0]] = list()
-
-        for row in pushes_query_result:
-            pushes[row[0]].append(dict({
-                'type': row[1],
-                'content': row[2],
-                'ip': row[3],
-                'date_time': row[4]
-            }))
-
-        kw_result = dict()
-        for k, v in pushes.items():
-            kw_result[id_to_post_id[k]] = v
-
-        return kw_result
+        return result

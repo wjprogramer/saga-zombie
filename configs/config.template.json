@@ -4,37 +4,35 @@
         "path": "./data/data.db"
     },
     "crawler":{
-        "username": "aaa",
-        "password": "bbb",
         "ranges": [
             {
                 "board": "Gossiping",
-                "time_begin": 3600,
-                "time_end": 0,
+                "beginning_page": 10,
+                "ending_page": 0,
                 "period": 300
             },
             {
                 "board": "Gossiping",
-                "time_begin": 86400,
-                "time_end": 3600,
+                "beginning_page": 100,
+                "ending_page": 10,
                 "period": 1200
             },
             {
                 "board": "Gossiping",
-                "time_begin": 604800,
-                "time_end": 86400,
+                "beginning_page": 1000,
+                "ending_page": 100,
                 "period": 3600
             },
             {
                 "board": "Gossiping",
-                "time_begin": 2419200,
-                "time_end": 604800,
+                "beginning_page": 2000,
+                "ending_page": 1000,
                 "period": 86400
             },
             {
                 "board": "Gossiping",
-                "time_begin": 864000000,
-                "time_end": 2419200,
+                "beginning_page": 3000,
+                "ending_page": 2000,
                 "period": 604800
             }
         ]

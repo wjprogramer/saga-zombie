@@ -5,9 +5,7 @@ SQLite handler module
 from threading import Lock
 import sqlite3
 
-from PTTLibrary.Information import PostInformation
-
-from utils import get_push_time
+from utils import get_push_ip_time
 from utils import get_post_year
 from utils import get_post_time
 from utils import get_current_time
@@ -29,155 +27,52 @@ class SQLiteDBHandler:
     def query(self, query: str, *args, **kwargs):
         return self.__execute_read(query, *args, **kwargs)
 
-    def get_boards(self):
-        return self.__execute_read('SELECT * FROM `boards`;')
-
-    def get_users(self):
-        return self.__execute_read('SELECT * FROM `users`;')
-
-    def get_posts(self, after: int=0):
-        if after == 0:
-            return self.__execute_read('SELECT * FROM `posts`;')
-        return self.__execute_read(
-            'SELECT * FROM `posts` WHERE `date_time` >= :after ;',
-            {'after': after})
-
-    def get_pushes(self, after: int=0):
-        if after == 0:
-            return self.__execute_read('SELECT * FROM `pushes`;')
-        return self.__execute_read(
-            'SELECT * FROM `pushes` WHERE `date_time` >= :after ;',
-            {'after': after})
-
-    def get_board_id(self, board: str) -> int:
-        return self.__execute_read(
-            'SELECT `id` FROM `boards` WHERE `name` = :board ;',
-            {'name': board}
-        )
-
-    def get_user_id(self, username: str) -> int:
-        return self.__execute_read(
-            'SELECT `id` FROM `users` WHERE `username` = :username ;',
-            {'username': username}
-        )
-
-    def get_post(self, post_id):
-        return self.__execute_read(
-            'SELECT * FROM `posts` WHERE `post_id` = :post_id ;',
-            {'post_id': post_id}
-        )
-
-    def get_post_pushes(self, post_id):
-        return self.__execute_read('''
-SELECT * FROM `pushes` WHERE `post` = (
-    SELECT `id` FROM `posts` WHERE `post_id` = :post_id
-);
-        ''', {'post_id': post_id})
-
-    def get_posts_by_user_id(self, user_id: int, after: int = 0):
-        if after == 0:
-            return self.__execute_read(
-                'SELECT * FROM `posts` WHERE `author` = :user_id ;',
-                {'user_id': user_id}
-            )
-        return self.__execute_read(
-            'SELECT * FROM `posts` WHERE `author` = :user_id AND `date_time` >= :after ;',
-            {'user_id': user_id, 'after': after}
-        )
-
-    def get_posts_by_username(self, username: str, after: int = 0):
-        if after == 0:
-            return self.__execute_read('''
-SELECT * FROM `posts`
-WHERE `author` = (
-    SELECT `id` FROM `users`
-    WHERE `username` = :username
-);''', {'username': username})
-        return self.__execute_read('''
-SELECT * FROM `posts`
-WHERE `author` = (
-    SELECT `id` FROM `users`
-    WHERE `username` = :username
-) AND `date_time` >= :after ;''', {'username': username, 'after': after})
-
-    def get_posts_by_ip(self, ip: str):
-        return self.__execute_read('SELECT * FROM `posts` WHERE `ip` = :ip ;', {'ip': ip})
-
-    def get_pushes_by_user_id(self, user_id: int, after: int = 0):
-        if after == 0:
-            return self.__execute_read(
-                'SELECT * FROM `pushes` WHERE `author` = :user_id ;',
-                {'user_id': user_id}
-            )
-        return self.__execute_read(
-            'SELECT * FROM `pushes` WHERE `author` = :user_id AND `date_time` > :after ;',
-            {'user_id': user_id, 'after': after}
-        )
-
-    def get_pushes_by_username(self, username: str, after: int=0):
-        if after == 0:
-            return self.__execute_read('''
-SELECT * FROM `pushes`
-WHERE `author` = (
-    SELECT `id` FROM `users`
-    WHERE `username` = :username
-);''', {'username': username})
-        return self.__execute_read('''
-SELECT * FROM `pushes`
-WHERE `author` = (
-    SELECT `id` FROM `users`
-    WHERE `username` = :username
-) AND `date_time` >= :after ;''', {'username': username, 'after': after})
-
-    def get_pushes_by_ip(self, ip: str):
-        return self.__execute_read('SELECT * FROM `pushes` WHERE `ip` = :ip ;', {'ip': ip})
-
-    def get_time_range_last_crawled(self, board, time_begin, time_end):
+    def get_page_range_last_crawled(self, board, beginning_page, ending_page):
         return self.__execute_read('''
 SELECT COALESCE (
     (
-        SELECT `date_time` FROM `crawled_time_range`
+        SELECT `date_time` FROM `crawled_page_range`
         WHERE `board` = (
             SELECT `id` FROM `boards`
             WHERE `name` = :board
-        ) and `time_begin` = :time_begin and `time_end` = :time_end
+        ) and `beginning_page` = :beginning_page and `ending_page` = :ending_page
     ), 0
 );
             ''',
             {
                 'board': board,
-                'time_begin': time_begin,
-                'time_end': time_end
+                'beginning_page': beginning_page,
+                'ending_page': ending_page
             })[0][0]
 
-    def set_time_range_crawled(self, board, time_begin, time_end):
+    def set_page_range_crawled(self, board, beginning_page, ending_page):
         self.__execute_write('''
-INSERT OR REPLACE INTO `crawled_time_range`
-(`id`, `board`, `time_begin`, `time_end`, `date_time`)
+INSERT OR REPLACE INTO `crawled_page_range`
+(`id`, `board`, `beginning_page`, `ending_page`, `date_time`)
 VALUES
 (
     (
-        SELECT `id` FROM `crawled_time_range`
+        SELECT `id` FROM `crawled_page_range`
         WHERE `board` = (
             SELECT `id` FROM `boards`
             WHERE `name` = :board
         ) AND
-        `time_begin` = :time_begin AND
-        `time_end` = :time_end
+        `beginning_page` = :beginning_page AND
+        `ending_page` = :ending_page
     ),
     (
         SELECT `id` FROM `boards`
         WHERE `name` = :board
     ),
-    :time_begin,
-    :time_end,
+    :beginning_page,
+    :ending_page,
     :date_time
 );
             ''',
             {
                 'board': board,
-                'time_begin': time_begin,
-                'time_end': time_end,
+                'beginning_page': beginning_page,
+                'ending_page': ending_page,
                 'date_time': get_current_time()
             })
 
@@ -207,22 +102,25 @@ VALUES
     :board
 );''', {'board': board})
 
-    def insert_or_update_post(self, post: PostInformation):
+    def insert_or_update_post(self, post):
         if post is None:
             return
 
-        author = get_post_author_id(post)
-        board = post.getBoard()
-        delete_status = post.getDeleteStatus()
-        post_time = get_post_time(post)
+        author = get_post_author_id(post['author'])
+        board = post['board']
+        post_time = get_post_time(post['date'])
+        title = post['article_title']
+        ip = post['ip']
+        messages = post['messages']
+        post_id = post['article_id']
+        content = post['content']
+        url = post['url']
+
         self.add_user(author)
         self.add_board(board)
 
-        if delete_status == 0:
-            with self.__post_insertion_lock:
-                post_id = post.getID()
-
-                self.__execute_write('''
+        with self.__post_insertion_lock:
+            self.__execute_write('''
 INSERT OR REPLACE INTO `posts`
 (
     `id`,
@@ -232,14 +130,16 @@ INSERT OR REPLACE INTO `posts`
     `date_time`,
     `title`,
     `web_url`,
-    `money`,
     `ip`
 )
 VALUES
 (
     (
         SELECT `id` FROM `posts`
-        WHERE `post_id` = :post_id
+        WHERE `board` = (
+            SELECT `id` FROM `boards`
+            WHERE `name` = :board
+        ) AND `post_id` = :post_id
     ),
     (
         SELECT `id` FROM `boards`
@@ -253,23 +153,21 @@ VALUES
     :date_time,
     :title,
     :web_url,
-    :money,
     :ip
 );
-                    ''',
-                    {
-                        'board': board,
-                        'post_id': post_id,
-                        'author': author,
-                        'date_time': post_time,
-                        'title': post.getTitle(),
-                        'web_url': post.getWebUrl(),
-                        'money': post.getMoney(),
-                        'ip': post.getIP()
-                    }
-                )
+                ''',
+                {
+                    'board': board,
+                    'post_id': post_id,
+                    'author': author,
+                    'date_time': post_time,
+                    'title': title,
+                    'web_url': url,
+                    'ip': ip
+                }
+            )
 
-                self.__execute_write('''
+            self.__execute_write('''
 INSERT OR REPLACE INTO `posts_content`
 (`id`, `post`, `content`)
 VALUES
@@ -278,40 +176,59 @@ VALUES
         SELECT `id` FROM `posts_content`
         WHERE `post` = (
             SELECT `id` FROM `posts`
-            WHERE `post_id` = :post_id
+            WHERE `board` = (
+                SELECT `id` FROM `boards`
+                WHERE `name` = :board
+            ) AND `post_id` = :post_id
         )
     ),
     (
         SELECT `id` FROM `posts`
-        WHERE `post_id` = :post_id
+        WHERE `board` = (
+            SELECT `id` FROM `boards`
+            WHERE `name` = :board
+        ) AND `post_id` = :post_id
     ),
     :content
 );
-                    ''',
-                    {
-                        'post_id': post_id,
-                        'content': post.getContent()
-                    }
-                )
+                ''',
+                {
+                    'board': board,
+                    'post_id': post_id,
+                    'content': content
+                }
+            )
 
-                # delete existing pushes
-                self.__execute_write('''
+            # delete existing pushes
+            self.__execute_write('''
 DELETE FROM `pushes`
 WHERE `post` = (
     SELECT `id` FROM `posts`
-    WHERE `post_id` = :post_id
+    WHERE `board` = (
+        SELECT `id` FROM `boards`
+        WHERE `name` = :board
+    ) AND `post_id` = :post_id
 );
-                    ''', {'post_id': post_id})
+                ''',
+                {
+                    'board': board,
+                    'post_id': post_id
+                }
+            )
 
-                year = get_post_year(post)
-                for push in post.getPushList():
-                    author = push.getAuthor()
-                    push_time = get_push_time(year, push)
-                    if push_time < post_time:
-                        year += 1
-                        push_time = get_push_time(year, push)
-                    self.add_user(author)
-                    self.__execute_write('''
+            year = get_post_year(post['date'])
+            if year == 0:
+                return
+            for push in messages:
+                author = push['push_userid']
+                push_content = push['push_content']
+                push_tag = push['push_tag']
+                ip, push_time = get_push_ip_time(year, push['push_ipdatetime'])
+                if push_time < post_time:
+                    _, push_time = get_push_ip_time(year + 1, push['push_ipdatetime'])
+                
+                self.add_user(author)
+                self.__execute_write('''
 INSERT INTO `pushes`
 (
     `post`,
@@ -325,7 +242,10 @@ VALUES
 (
     (
         SELECT `id` FROM `posts`
-        WHERE `post_id` = :post_id
+        WHERE `board` = (
+            SELECT `id` FROM `boards`
+            WHERE `name` = :board
+        ) AND `post_id` = :post_id
     ),
     :type ,
     (
@@ -338,15 +258,17 @@ VALUES
 )
                     ''',
                     {
+                        'board': board,
                         'post_id': post_id,
-                        'type': push.getType(),
-                        'author': push.getAuthor(),
-                        'content': push.getContent(),
-                        'ip': push.getIP(),
+                        'type': push_tag,
+                        'author': author,
+                        'content': push_content,
+                        'ip': ip,
                         'date_time': push_time
-                    })
+                    }
+                )
 
-                self.__execute_write('''
+            self.__execute_write('''
 INSERT OR REPLACE INTO `crawled_posts`
 (`id`, `post`, `date_time`)
 VALUES
@@ -355,20 +277,28 @@ VALUES
         SELECT `id` FROM `crawled_posts`
         WHERE `post` = (
             SELECT `id` FROM `posts`
-            WHERE `post_id` = :post_id
+            WHERE `board` = (
+                SELECT `id` FROM `boards`
+                WHERE `name` = :board
+            ) AND `post_id` = :post_id
         )
     ),
     (
         SELECT `id` FROM `posts`
-        WHERE `post_id` = :post_id
+        WHERE `board` = (
+            SELECT `id` FROM `boards`
+            WHERE `name` = :board
+        ) AND `post_id` = :post_id
     ),
     :date_time
 );
                 ''',
                 {
+                    'board': board,
                     'post_id': post_id,
                     'date_time': get_current_time()
-                })
+                }
+            )
 
     def __execute_read(self, *args, **kwargs):
         with self.__execution_lock:
@@ -425,13 +355,13 @@ CREATE TABLE IF NOT EXISTS `posts`
 (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT,
     `board` INTEGER NOT NULL,
-    `post_id` TEXT UNIQUE NOT NULL,
+    `post_id` TEXT NOT NULL,
     `author` INTEGER NOT NULL,
     `date_time` INTEGER,
     `title` TEXT,
     `web_url` TEXT,
-    `money` INTEGER,
     `ip` TEXT,
+    UNIQUE(`board`, `post_id`),
     FOREIGN KEY (board) REFERENCES board(id),
     FOREIGN KEY (author) REFERENCES users(id)
 );''')
@@ -473,7 +403,7 @@ CREATE TABLE IF NOT EXISTS `pushes`
 (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT,
     `post` INTEGER NOT NULL,
-    `type` INTEGER NOT NULL,
+    `type` TEXT NOT NULL,
     `author` INTEGER NOT NULL,
     `content` TEXT NOT NULL,
     `ip` TEXT,
@@ -517,33 +447,33 @@ CREATE UNIQUE INDEX IF NOT EXISTS
 CREATE INDEX IF NOT EXISTS
 `index_crawled_posts_date_time` ON `crawled_posts`(`date_time`);''')
 
-        # table `crawled_time_range`
+        # table `crawled_page_range`
         self.__conn.execute('''
-CREATE TABLE IF NOT EXISTS `crawled_time_range`
+CREATE TABLE IF NOT EXISTS `crawled_page_range`
 (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT,
     `board` INTEGER NOT NULL,
-    `time_begin` INTEGER NOT NULL,
-    `time_end` INTEGER NOT NULL,
+    `beginning_page` INTEGER NOT NULL,
+    `ending_page` INTEGER NOT NULL,
     `date_time` NOT NULL,
-    UNIQUE (`board`, `time_begin`, `time_end`) ON CONFLICT REPLACE,
+    UNIQUE (`board`, `beginning_page`, `ending_page`) ON CONFLICT REPLACE,
     FOREIGN KEY (`board`) REFERENCES `posts`(`id`)
 );''')
         self.__conn.execute('''
 CREATE UNIQUE INDEX IF NOT EXISTS
-`index_crawled_time_range_id` ON `crawled_time_range`(`id`);''')
+`index_crawled_page_range_id` ON `crawled_page_range`(`id`);''')
         self.__conn.execute('''
 CREATE INDEX IF NOT EXISTS
-`index_crawled_time_range_board` ON `crawled_time_range`(`board`);''')
+`index_crawled_page_range_board` ON `crawled_page_range`(`board`);''')
         self.__conn.execute('''
 CREATE INDEX IF NOT EXISTS
-`index_crawled_time_range_time_begin` ON `crawled_time_range`(`time_begin`);''')
+`index_crawled_page_range_beginning_page` ON `crawled_page_range`(`beginning_page`);''')
         self.__conn.execute('''
 CREATE INDEX IF NOT EXISTS
-`index_crawled_time_range_time_end` ON `crawled_time_range`(`time_end`);''')
+`index_crawled_page_range_ending_page` ON `crawled_page_range`(`ending_page`);''')
         self.__conn.execute('''
 CREATE INDEX IF NOT EXISTS
-`index_crawled_time_range_date_time` ON `crawled_time_range`(`date_time`);''')
+`index_crawled_page_range_date_time` ON `crawled_page_range`(`date_time`);''')
 
     def connected(self) -> bool:
         return self.__enter__() is not None

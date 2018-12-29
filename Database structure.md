@@ -26,12 +26,11 @@
 | ----------- | --------- | ------------------------------------------------------ | ---------------------------------------------------------- |
 | `id`        | `INTEGER` | `PRIMARY KEY`<br />`AUTOINCREMENT`<br />`UNIQUE INDEX` | `123456`                                                   |
 | `board`     | `INTEGER` | `FOREIGN KEY (boards.id)`<br />`NOT NULL`<br />`INDEX` | `1`                                                        |
-| `post_id`   | `TEXT`    | `UNIQUE`<br />`INDEX`                                  | `1QQ10QRo`                                                 |
+| `post_id`   | `TEXT`    | `UNIQUE(board, post_id)`<br />`INDEX`                  | `1QQ10QRo`                                                 |
 | `author`    | `INTEGER` | `FOREIGN KEY (users.id)`<br />`NOT NULL`<br />`INDEX`  | `87`                                                       |
 | `date_time` | `INTEGER` | `INDEX`                                                | `1544356116`                                               |
 | `title`     | `TEXT`    |                                                        | `[問卦] 在香港唸到大學是不是很屌`                          |
 | `web_url`   | `TEXT`    |                                                        | `https://www.ptt.cc/bbs/Gossiping/M.1543497666.A.6EC.html` |
-| `money`     | `INTEGER` |                                                        | `1`                                                        |
 | `ip`        | `TEXT`    | `INDEX`                                                | `223.141.187.205`                                          |
 
 ### `posts_content`
@@ -48,7 +47,7 @@
 | ----------- | --------- | ------------------------------------------------------ | ------------------------------------------ |
 | `id`        | `INTEGER` | `PRIMARY KEY`<br />`AUTOINCREMENT`<br />`UNIQUE INDEX` | `8`                                        |
 | `post`      | `INTEGER` | `FOREIGN KEY (posts.id)`<br />`NOT NULL`<br />`INDEX`  | `123456`                                   |
-| `type`      | `INTEGER` | `NOT NULL`<br />`INDEX`                                | `2`                                        |
+| `type`      | `TEXT`    | `NOT NULL`<br />`INDEX`                                | `2`                                        |
 | `author`    | `INTEGER` | `FOREIGN KEY (users.id)`<br />`NOT NULL`<br />`INDEX`  | `12345`                                    |
 | `content`   | `TEXT`    | `NOT NULL`                                             | `香港有分，只有前四大是好的，後面也是學店` |
 | `ip`        | `TEXT`    | `INDEX`                                                | `None`                                     |
@@ -62,13 +61,13 @@
 | `post`      | `INTEGER` | `FOREIGN KEY (posts.id)`<br />`UNIQUE`<br />`NOT NULL`<br />`INDEX` | `123456`      |
 | `date_time` | `INTEGER` | `NOT NULL`<br />`INDEX`                                      | `1544356116`  |
 
-### `crawled_time_range`
+### `crawled_page_range`
 
-| Column Name  | Data Type | Attributes                                                   | Example Value |
-| ------------ | --------- | ------------------------------------------------------------ | ------------- |
-| `id`         | `INTEGER` | `PRIMARY KEY`<br />`AUTOINCREMENT`<br />`INDEX`              | `1`           |
-| `board`      | `INTEGER` | `FOREIGN KEY (board.id)`<br />`NOT NULL`<br />`INDEX`        | `Gossiping`   |
-| `time_begin` | `INTEGER` | `UNIQUE (board, time_begin, time_end)`<br />`NOT NULL`<br />`INDEX` | `86400`       |
-| `time_end`   | `INTEGER` | `UNIQUE (board, time_begin, time_end)`<br />`NOT NULL`<br />`INDEX` | `0`           |
-| `date_time`  | `INTEGER` | `NOT NULL`<br />`INDEX`                                      | `1544356116`  |
+| Column Name      | Data Type | Attributes                                                   | Example Value |
+| ---------------- | --------- | ------------------------------------------------------------ | ------------- |
+| `id`             | `INTEGER` | `PRIMARY KEY`<br />`AUTOINCREMENT`<br />`INDEX`              | `1`           |
+| `board`          | `INTEGER` | `FOREIGN KEY (board.id)`<br />`NOT NULL`<br />`INDEX`        | `Gossiping`   |
+| `beginning_page` | `INTEGER` | `UNIQUE (board, beginning_page, ending_page)`<br />`NOT NULL`<br />`INDEX` | `86400`       |
+| `ending_page`    | `INTEGER` | `UNIQUE (board, beginning_page, ending_page)`<br />`NOT NULL`<br />`INDEX` | `0`           |
+| `date_time`      | `INTEGER` | `NOT NULL`<br />`INDEX`                                      | `1544356116`  |
 

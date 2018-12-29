@@ -69,7 +69,7 @@ class HTTPServer:
                 print('load', __package__ + '.modules.' + fn[:-3])
                 module = module_loader.load(__package__ + '.modules.' + fn[:-3])
                 try:
-                    module.start_caching_thread()
+                    module.start_caching_thread(self.__db)
                 except:
                     pass
 

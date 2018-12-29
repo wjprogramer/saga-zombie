@@ -23,14 +23,16 @@ class Module(BaseModule):
 
         query_result = self.db_handler.query('''
 SELECT
+    `boards`.`name` as `board`,
     `posts`.`post_id` as `post_id`,
     `pushes`.`type` as `type`,
-    `users`.`username` as `username`,
+    `users`.`username` as `author`,
     `pushes`.`ip` as `ip`,
     `pushes`.`date_time` as `date_time`
 FROM `pushes`
 LEFT JOIN `posts` ON `posts`.`id` = `pushes`.`post`
 LEFT JOIN `users` ON `users`.`id` = `pushes`.`author`
+LEFT JOIN `boards` ON `boards`.`id` = `posts`.`board`
 WHERE
 `pushes`.`date_time`
 BETWEEN :time_begin AND :time_end ;''',
@@ -42,11 +44,12 @@ BETWEEN :time_begin AND :time_end ;''',
         kw_result = list()
         for row in query_result:
             kw_result.append({
-                'post_id': row[0],
-                'type': row[1],
-                'username': row[2],
-                'ip': row[3],
-                'date_time': row[4],
+                'board': row[0],
+                'post_id': row[1],
+                'type': row[2],
+                'author': row[3],
+                'ip': row[4],
+                'date_time': row[5],
             })
 
         return kw_result

@@ -6,7 +6,7 @@ from http_.base_module import RequiredParam
 from utils import get_current_time
 
 class Module(BaseModule):
-    """get_users_pushes_count module
+    """get_users_pushes module
     """
 
     def required_param(self):

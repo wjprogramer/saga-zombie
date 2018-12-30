@@ -119,21 +119,14 @@ WHERE `post` IN (
                 print_exc()
 
     @staticmethod
-    def __check_caching_thread(db_handler):
-        with Module.caching_thread_checking_lock:
-            if Module.caching_thread is None or not Module.caching_thread.is_alive():
-                print('[module get_word_freq] create new routine thread')
-                Module.caching_thread = Thread(
-                    target=Module.__caching_thread_routine, args=[db_handler], daemon=True)
-                Module.caching_thread.start()
-
-    @staticmethod
     def start_caching_thread(db_handler):
-        Module.__check_caching_thread(db_handler)
+        if Module.caching_thread is None or not Module.caching_thread.is_alive():
+            print('[module get_word_freq] create new routine thread')
+            Module.caching_thread = Thread(
+                target=Module.__caching_thread_routine, args=[db_handler], daemon=True)
+            Module.caching_thread.start()
 
     def get_data(self):
-        Module.__check_caching_thread(self.db_handler)
-
         params = self.get_params()
         beginning_day = params[0]
         ending_day = params[1]

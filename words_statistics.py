@@ -13,6 +13,7 @@ def cut(string):
 def basic_filter(d):
     d = map(lambda x: x.strip(), d)
     d = filter(lambda x: len(x) > 1, d)
+    d = filter(lambda x: not x.isnumeric(), d)
     d = filter(lambda x: x not in MORE_USELESS_WORDS, d)
     return d
 

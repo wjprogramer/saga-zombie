@@ -1,7 +1,9 @@
 {
     "database": {
         "type": "sqlite",
-        "path": "./data/data.db"
+        "path": "./data/data.db",
+        "backup": "./data/backup.db",
+        "backup_period": 3600
     },
     "crawler":{
         "ranges": [

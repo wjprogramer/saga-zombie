@@ -3,6 +3,8 @@ SQLite handler module
 """
 
 from threading import Lock
+from threading import Thread
+from time import sleep
 import sqlite3
 
 from utils import get_push_ip_time
@@ -13,7 +15,7 @@ from utils import get_post_author_id
 
 
 class SQLiteDBHandler:
-    def __init__(self, path, max_op_count: int = 10000):
+    def __init__(self, path, backup=None, backup_period=0, max_op_count: int = 10000):
         self.__path = path
         self.__conn = None
         self.__max_op_count = max_op_count
@@ -23,6 +25,8 @@ class SQLiteDBHandler:
         self.__commitment_lock = Lock()
         self.__post_insertion_lock = Lock()
         self.__db_opening = False
+        self.__backup = backup
+        self.__backup_period = backup_period
 
     def query(self, query: str, *args, **kwargs):
         return self.__execute_read(query, *args, **kwargs)
@@ -482,6 +486,15 @@ CREATE INDEX IF NOT EXISTS
         if self.__db_opening:
             self.__exit__()
 
+    def __backup_routine(self):
+        if self.__backup_period > 0:
+            while True:
+                if not self.__db_opening:
+                    break
+                with sqlite3.connect(self.__backup) as backup:
+                    self.__conn.backup(backup)
+                sleep(self.__backup_period)
+
     def __enter__(self):
         with self.__execution_lock:
             if not self.__db_opening:
@@ -490,6 +503,8 @@ CREATE INDEX IF NOT EXISTS
                 # enables foreign key constraint support
                 self.__conn.execute('PRAGMA foreign_key = ON;')
                 self.__create_tables()
+                if self.__backup is not None:
+                    Thread(target=self.__backup_routine).start()
                 return self
 
     def __exit__(self, *args):

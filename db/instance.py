@@ -9,6 +9,13 @@ def make_db_instance(configs):
                 pass
         except IOError:
             eprint('could not read or write', configs['path'])
+        if 'backup' in configs:
+            if 'backup_period' in configs:
+                backup_period = configs['backup_period']
+            else:
+                backup_period = 3600
+            backup = configs['backup']
+            return sqlite_db_handler.SQLiteDBHandler(configs['path'], backup, backup_period)
         return sqlite_db_handler.SQLiteDBHandler(configs['path'])
 
 

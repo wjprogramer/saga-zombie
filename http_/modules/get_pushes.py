@@ -1,4 +1,4 @@
-"""get_users_pushes_count module
+"""get_users_pushes module
 """
 
 from http_.base_module import BaseModule

@@ -65,13 +65,17 @@ class HTTPServer:
         """
 
         for fn in os.listdir('./http_/modules'):
+            print(fn)
             if fnmatch.fnmatch(fn, '*.py'):
-                print('load', __package__ + '.modules.' + fn[:-3])
-                module = module_loader.load(__package__ + '.modules.' + fn[:-3])
+                module_path = __package__ + '.modules.' + fn[:-3]
+                print('load', module_path)
+                module = module_loader.load(module_path)
+                if module is None:
+                    print('failed to load', module_path)
                 try:
-                    module.start_caching_thread(self.__db)
-                except:
-                    pass
+                    module.Module.start_caching_thread(self.__db)
+                except Exception as e:
+                    print(e)
 
         self.__is_serving = True
         handler = partial(RequestHandler, self.__db)

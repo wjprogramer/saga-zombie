@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>Document</title>
+
+		<script
+			  src="https://code.jquery.com/jquery-3.3.1.min.js"
+			  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+			  crossorigin="anonymous"></script>
+	</head>
+	<body>
+		<script type="text/javascript">
+			//获取Cookie
+			function getCookie(name){
+			    var strCookie=document.cookie;
+			    var arrCookie=strCookie.split("; ");
+			    for(var i=0;i<arrCookie.length;i++){
+			       var arr=arrCookie[i].split("=");
+			       if(arr[0]==name)return arr[1];
+			    }
+			    return "";
+			}
+			alert(getCookie("name"));
+		</script>
+	</body>
+</html>

@@ -1,71 +1,68 @@
 /* Get Data */
-var date;
+var date = Date();
+var current_hour_progress = 0; // 取得今天的進度 ex: 正午12:00，為0.5
+var heatmap = new Array();
+var complete_number = 0;
 
-var heatmap = [
-    // 日
-    [   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-        0,   0,  70,   0,   0,   0,   0,   0,   0,   0,   0,   0, ],
-    // 一
-    [   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-        0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, ],
-    // 二
-    [   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-        0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, ],
-    // 三
-    [   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-        0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, ],
-    // 四
-    [   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-        0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, ],
-    // 五
-    [   0, 135,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-        0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, ],
-    // 六
-    [   0,   0,  90,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-        0,   0,  80,   0,   0,   0,   0,   0,   0,   0,   0,   0, ]
-]
+for (var i = 0; i < 7; i++) {
+  heatmap[i] = new Array();
+}
+
+for (var i = 0; i < 7; i++) {
+  for (var j = 0; j < 24; j++) {
+    heatmap[i][j]=0;
+  }
+}
 
 function createHeatMap() {
 	date = new Date();
+	current_hour_progress = (date.getMinutes() * 60 + date.getSeconds()) / 86400;
+  complete_number = 0;
 
-	var xmlhttp = new XMLHttpRequest();
-	var push_count_of_week = [0, 0, 0, 0, 0, 0, 0,]; // sunday to saturday
-	for (var count in push_count_of_week) {
-
+	// 取得距離i天前的資料
+	for (i = 0; i < 7; i++) {
+    for(j = 0; j < 24; j++) {
+      request(i, j);
+    }
 	}
+}
+
+function request(day, hour) {
+	var url;
+	url = "https://ptt.imyz.tw/query/get_users_pushes_count?beginning_day=" + (current_hour_progress + ((hour + 1) / 24) + day) + "&ending_day=" + (current_hour_progress + (hour / 24) + day);
+
+	// url = "https://ptt.imyz.tw/query/get_users_pushes_count?beginning_day=" + 1 + "&ending_day=" + 0;
+
 	var users_pushes_count_obj;
 	var users_pushes_count_json;
-	var today_progess = 0; // 取得今天的進度 ex: 正午12:00，為0.5
-	today_progess = (date.getHours() * 60 * 60 + date.getMinutes() * 60 + date.getSeconds()) / 86400;
 
-	var url = "https://ptt.imyz.tw/query/get_users_pushes_count?beginning_day=7&ending_day=0";
-
+	var xmlhttp = new XMLHttpRequest();
 	xmlhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
-	  		// 取得星期日到六的資料
-		  	for (i = 0; i < 7; i++) {
-		  		if (i == 0) {
-					url = "https://ptt.imyz.tw/query/get_users_pushes_count?beginning_day=" + today_progess + "&ending_day=" + 0;
-		  		} else {
-		  			url = "https://ptt.imyz.tw/query/get_users_pushes_count?beginning_day=" + (i+1) + "&ending_day=" + i;
-		  		}
-		  		console.log(url);
+        complete_number++
 
-		  		users_pushes_count_obj = JSON.parse(this.responseText);
-			    users_pushes_count_json = JSON.stringify(users_pushes_count_obj);
-			    for (index in users_pushes_count_json)
-			    {
-			        if (users_pushes_count_obj[index]["username"] == document.getElementById('search').value) {
-			        	var day = getDay(i);
-			        	console.log("day: --- " + day);
-			        	push_count_of_week[day] = users_pushes_count_obj[index]["count"];
-			        	break;
-			        }
-			    }
-		  	}
-		  	console.log(push_count_of_week);
+	  		users_pushes_count_obj = JSON.parse(this.responseText);
+		    users_pushes_count_json = JSON.stringify(users_pushes_count_obj);
+		    for (index in users_pushes_count_json)
+		    {
+		    	if (users_pushes_count_obj[index] == undefined) {
+		    		continue;
+		    	}
+	        if (users_pushes_count_obj[index]["username"] == document.getElementById('search').value) {
+	        	var d = getDay(day);
+            var h = getHour(hour);
+            heatmap[d][h] = users_pushes_count_obj[index]["count"];
+            console.log("" + d + "/" + h + ":" + heatmap[d][h]);
+	        	break;
+	        }
+		    }
 	  	}
 	};
+  xmlhttp.addEventListener("load", function(e){
+    if (complete_number == 7 * 24) 
+      draw();
+  });
+
 	xmlhttp.open("GET", url, true);
 	xmlhttp.send();
 }
@@ -73,6 +70,11 @@ function createHeatMap() {
 function getDay(i) {
 	var day = (date.getDay() + 7 - i) % 7;
 	return day;
+}
+
+function getHour(i) {
+  var hour = (date.getHours() + 24 - i) % 24;
+  return hour;
 }
 
 /* PIXI */
@@ -113,28 +115,36 @@ let Application = PIXI.Application,
 
 
 let type = "WebGL"
-if(!PIXI.utils.isWebGLSupported()){
+if (!PIXI.utils.isWebGLSupported()) {
   type = "canvas"
 }
 
 PIXI.utils.sayHello(type)
 
 //Create a Pixi Application
-let app = new PIXI.Application({
-    width: 1400,         // default: 800
-    height: 512,        // default: 600
-    antialias: true,    // default: false
-    transparent: true, // default: false 透明度
-    resolution: 1,      // default: 1
-    preserveDrawingBuffer: true
+let app;
+
+function draw() {
+  app = new PIXI.Application({
+      width: 1400,         // default: 800
+      height: 512,        // default: 600
+      antialias: true,    // default: false
+      transparent: true, // default: false 透明度
+      resolution: 1,      // default: 1
+      preserveDrawingBuffer: true
+    }
+  );
+  app.interactive = true;
+  app.stage.interactive = true;
+  // app.renderer.backgroundColor = 0xF3F3F3; // 061639
+
+  while (document.getElementById('heatmap').firstChild) {
+      document.getElementById('heatmap').removeChild(document.getElementById('heatmap').firstChild);
   }
-);
+  document.getElementById('heatmap').appendChild(app.view);
+  setup();
 
-app.interactive = true;
-app.stage.interactive = true;
-// app.renderer.backgroundColor = 0xF3F3F3; // 061639
-
-document.getElementById('heatmap').appendChild(app.view);
+}
 
 function setup() {
 
@@ -221,4 +231,5 @@ function setup() {
 
   
 } // end setup
-setup();
+
+

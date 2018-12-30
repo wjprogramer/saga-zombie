@@ -1,7 +1,8 @@
 	
-	var userIp;
-	var userAmount ;
-	var userName;
+var userIp;
+var userAmount ;
+var userName;
+
 function searchID(){
 	userIp = new Array();
 	userAmount = new Array();

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>Document</title>
+	</head>
+	<body>
+		<script type="text/javascript">
+		var url = location.search;
+		var Request = new Object();
+		if(url.indexOf("?")!=-1) {
+			var str = url.substr(1)　//去掉?号
+			strs = str.split("&");
+			for(var i=0;i<strs.length;i++){
+				Request[strs[i ].split("=")[0]]=unescape(strs[i].split("=")[1]);
+			}
+		}
+		alert(Request["username"])
+		alert(Request["sex"])
+		</script>
+	</body>
+</html>

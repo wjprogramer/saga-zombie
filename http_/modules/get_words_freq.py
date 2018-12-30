@@ -31,7 +31,7 @@ class Module(BaseModule):
     ROUTINE_PERIOD = 900
     caching_thread_checking_lock = Lock()
     caching_thread = None
-    CATCH_TOP_N_WORDS = 150
+    CATCH_TOP_N_WORDS = 200
 
     def required_param(self):
         return (

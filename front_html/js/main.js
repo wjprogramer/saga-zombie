@@ -37,3 +37,40 @@ function loadUserList() {
 }
 
 loadUserList();
+
+// 顯示文字雲
+$(function () {
+  $.ajax({
+          url: "https://ptt.imyz.tw/query/get_words_freq?beginning_day=8&ending_day=0",   //存取Json的網址
+          type: "GET",
+          dataType: 'json',
+          success: function (data) {
+                console.log(data.statistic);
+                console.log(data.statistic[0]);
+                data.statistic.forEach(function (element){
+                element[1] = element[1]/100;
+                console.log(element[1]);
+          });
+  var options = {
+            "list" : data.statistic,
+            "gridSize": 30, // size of the grid in pixels
+            "weightFactor": 2, // number to multiply for size of each word in the list
+            "fontWeight": 'normal', // 'normal', 'bold' or a callback
+            "fontFamily": 'Times, serif', // font to use
+            "color": 'random-light', // 'random-dark' or 'random-light'
+            "backgroundColor": '#757575', // the color of canvas
+            "rotateRatio": 1 // probability for the word to rotate. 1 means always rotate
+          };
+          // data.gridSize = 600;
+          // data.weightFactor = 10;
+          // data.fontWeight = 'normal';
+          // data.fontFamily = 'Times, serif';
+          // data.color = 'random-light';
+          // data.backgroundColor = '#333';
+          // data.rotateRatio = 'rotateRatio';
+          // console.log(data);
+          WordCloud.minFontSize = "15px";
+          WordCloud(document.getElementById('word_cloud'), options );
+        }
+      });
+  });

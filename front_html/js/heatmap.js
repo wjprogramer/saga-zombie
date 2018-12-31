@@ -40,6 +40,7 @@ function request(day, hour) {
 	xmlhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
         complete_number++
+        console.log(complete_number);
 
 	  		users_pushes_count_obj = JSON.parse(this.responseText);
 		    users_pushes_count_json = JSON.stringify(users_pushes_count_obj);
@@ -61,6 +62,19 @@ function request(day, hour) {
   xmlhttp.addEventListener("load", function(e){
     if (complete_number == 7 * 24) 
       draw();
+    else if (complete_number == 1) {
+      while (document.getElementById('heatmap').firstChild) {
+          document.getElementById('heatmap').removeChild(document.getElementById('heatmap').firstChild);
+      }
+      var img = document.createElement('img');
+      img.src = "img/loading2.gif";
+      img.alt = "Loading...";
+      img.title = "Loading..."; 
+      img.className = "w3-image";
+      img.style.cssText = "display: block; margin:120px auto auto auto;";
+
+      document.getElementById('heatmap').appendChild(img);
+    }
   });
 
 	xmlhttp.open("GET", url, true);

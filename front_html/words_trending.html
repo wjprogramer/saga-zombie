@@ -1,0 +1,135 @@
+<html>
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            var days = 30, count = 0;
+            var all_words = new Map();
+            var words_trend = new Array();
+            var daily_trend = new Map();
+
+            function get_url(day) {
+                return 'https://ptt.imyz.tw/query/get_words_freq?beginning_day=' + (day + 1) + '&ending_day=' + day;
+            }
+
+            function handle_data(data, index) {
+                data = JSON.parse(data);
+                data = data['statistic'];
+                daily_trend.set(index, new Map(data));
+                data.forEach(function (element) {
+                    if (all_words.has(element[0]))
+                        all_words.set(element[0], all_words.get(element[0]) + element[1]);
+                    else
+                        all_words.set(element[0], element[1]);
+                });
+            }
+
+            function cmp(a, b) {
+                if (a[1] < b[1]) return -1;
+                if (a[1] > b[1]) return 1;
+                return 0;
+            }
+
+            function request_things(index) {
+                var request = new XMLHttpRequest();
+                request.onreadystatechange = function () {
+                    if (this.readyState == 4) {
+                        if (this.status == 200)
+                            handle_data(this.responseText, index);
+                        ++count;
+                        // do when all request is done
+                        if (count == days) {
+                            all_words = Array.from(all_words);
+                            all_words.sort(cmp);
+                            // top 15 words
+                            all_words = all_words.slice(-15);
+                            all_words.forEach(function (element, index) {
+                                var arr = new Array();
+                                for (var i = 0; i < days; ++i) {
+                                    if (daily_trend.has(i) &&
+                                        daily_trend.get(i).has(element[0]))
+                                        arr[i] = daily_trend.get(i).get(element[0]);
+                                    else
+                                        arr[i] = null;
+                                }
+                                words_trend.push({
+                                    name: element[0],
+                                    data: arr
+                                });
+                            });
+                            document.getElementById('chart').innerText = '';
+                            make_chart();
+                        }
+                    }
+                };
+                request.open('GET', get_url(index), true);
+                request.send(null);
+            }
+
+            for (var i = 0; i < days; ++i)
+                request_things(i);
+
+            function make_chart() {
+
+                var arr = new Array();
+                for (var i = 0; i < days; ++i)
+                    arr.push(i);
+                arr.reverse();
+
+                var options = {
+                    chart: {
+                        height: window.innerHeight - 20,
+                        type: 'line',
+                        zoom: {
+                            enabled: false
+                        }
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    stroke: {
+                        curve: 'straight'
+                    },
+                    series: words_trend,
+                    title: {
+                        text: 'words trending in past 30 days',
+                        align: 'left'
+                    },
+                    grid: {
+                        row: {
+                            colors: ['#f3f3f3', 'transparent'],
+                            opacity: 0.5
+                        },
+                    },
+                    xaxis: {
+                        categories: arr,
+                        title: {
+                            text: 'Days ago'
+                        }
+                    },
+                    yaxis: {
+                        title: {
+                            text: 'Count'
+                        }
+                    }
+                }
+
+                var chart = new ApexCharts(
+                    document.querySelector("#chart"),
+                    options
+                );
+
+                chart.render();
+            }
+
+        });
+    </script>
+</head>
+
+<body>
+    <div id='chart'>Loading</div>
+</body>
+
+</html>

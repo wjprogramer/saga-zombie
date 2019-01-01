@@ -2,6 +2,8 @@
 """
 
 from functools import partial
+import os
+import fnmatch
 
 from urllib.parse import urlparse
 from http.server import ThreadingHTTPServer
@@ -29,6 +31,8 @@ class RequestHandler(BaseHTTPRequestHandler):
         print(self.path)
         try:
             module = module_loader.load(RequestHandler.MODULES_PATH + path.replace('/', '.'))
+            if module is None:
+                raise ModuleNotFoundError()
             module.Module(self, self.__db)
         except ModuleNotFoundError as exception:
             print(exception)
@@ -59,6 +63,19 @@ class HTTPServer:
     def serve_forever(self):
         """ start serving
         """
+
+        for fn in os.listdir('./http_/modules'):
+            print(fn)
+            if fnmatch.fnmatch(fn, '*.py'):
+                module_path = __package__ + '.modules.' + fn[:-3]
+                print('load', module_path)
+                module = module_loader.load(module_path)
+                if module is None:
+                    print('failed to load', module_path)
+                try:
+                    module.Module.start_caching_thread(self.__db)
+                except Exception as e:
+                    print(e)
 
         self.__is_serving = True
         handler = partial(RequestHandler, self.__db)

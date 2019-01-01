@@ -11,15 +11,15 @@ class Module(BaseModule):
 
     def required_param(self):
         return (
-            RequiredParam('time_begin', int, 604800),
-            RequiredParam('time_end', int, 0)
+            RequiredParam('beginning_day', float, 7),
+            RequiredParam('ending_day', float, 0)
         )
 
     def get_data(self):
         params = self.get_params()
         current = get_current_time()
-        time_begin = params[0]
-        time_end = params[1]
+        beginning_day = params[0]
+        ending_day = params[1]
 
         query_result = self.db_handler.query('''
 SELECT `users`.`username`, COUNT(`posts`.`author`) FROM `posts`
@@ -27,8 +27,8 @@ LEFT JOIN `users` ON  `posts`.`author` = `users`.`id`
 WHERE `posts`.`date_time` BETWEEN :time_begin AND :time_end
 GROUP BY `posts`.`author` ;''',
             {
-                'time_begin': current - time_begin,
-                'time_end': current - time_end
+                'time_begin': float(current - beginning_day * 86400),
+                'time_end': float(current - ending_day * 86400)
             })
 
         kw_result = list()

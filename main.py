@@ -7,7 +7,7 @@ import json
 import sys
 import os
 
-sys.path.append(os.path.abspath('PTTLibrary'))
+sys.path.append(os.path.abspath('ptt-web-crawler'))
 
 from utils import eprint
 

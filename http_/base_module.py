@@ -1,6 +1,7 @@
 """base HTTP module
 """
 
+from traceback import print_exc
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
@@ -27,6 +28,10 @@ class BaseModule:
     CONTENT_TYPE_JSON = 'application/json'
     ENCODING = 'utf-8'
 
+    @staticmethod
+    def start_caching_thread(db_handler):
+        pass
+
     def __init__(self, request_handler: BaseHTTPRequestHandler, db_handler: SQLiteDBHandler):
         self.request_handler = request_handler
         self.db_handler = db_handler
@@ -34,7 +39,7 @@ class BaseModule:
         parsed_result = urlparse(self.request_handler.path)
         self.path = parsed_result.path
         self.query = parse_qs(parsed_result.query)
-        
+
         self.params = list()
 
         print(
@@ -53,7 +58,7 @@ class BaseModule:
 
         try:
             return value_type(self.query[keyword][0])
-        except (IndexError, KeyError, TypeError):
+        except (IndexError, KeyError, TypeError, ValueError):
             return default
 
     def __send_status_code(self, code: int):
@@ -86,12 +91,16 @@ class BaseModule:
         try:
             data = json.dumps(self.get_data())
         except:
+            print_exc()
             data = json.dumps({'status': 'module fault'})
-        self.__send_status_code(200)
-        self.__send_header(BaseModule.CONTENT_TYPE, BaseModule.CONTENT_TYPE_JSON)
-        self.__send_header(BaseModule.CONTENT_LENGTH, len(data))
-        self.__end_headers()
-        self.__write(data)
+        try:
+            self.__send_status_code(200)
+            self.__send_header(BaseModule.CONTENT_TYPE, BaseModule.CONTENT_TYPE_JSON)
+            self.__send_header(BaseModule.CONTENT_LENGTH, len(data))
+            self.__end_headers()
+            self.__write(data)
+        except BrokenPipeError:
+            print('Client closed', self.request_handler.client_address)
 
     def __missing_param(self, keyword):
         self.__send_status_code(400)

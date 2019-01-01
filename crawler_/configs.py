@@ -10,14 +10,8 @@ def check_crawler_configs(config):
         if not isinstance(config[k], v):
             eprint('key [', k, '] type error')
             return False
-    if config['username'] == '':
-        eprint('field `username` in some of crawler configs are empty')
-        return False
-    if config['password'] == '':
-        eprint('field `password` in some of crawler configs are empty')
-        return False
     ranges = config['ranges']
-    for k, v in ConfigTimeRange.CONFIG_KEYS.items():
+    for k, v in ConfigPageRange.CONFIG_KEYS.items():
         for range_ in ranges:
             if k not in range_:
                 eprint('key [', k, '] not in crawler ranges')
@@ -28,41 +22,38 @@ def check_crawler_configs(config):
     return True
 
 
-def make_crawler_config_objects(config, db):
+def make_crawler_config_objects(config, database):
     ranges = list()
     for range_ in config['ranges']:
         ranges.append(
-            ConfigTimeRange(
+            ConfigPageRange(
                 range_['board'],
-                range_['time_begin'],
-                range_['time_end'],
+                range_['beginning_page'],
+                range_['ending_page'],
                 range_['period']
             )
         )
     return Config(
-        config['username'],
-        config['password'],
-        config['kick_others'],
-        db,
+        database,
         ranges
     )
 
 
-class ConfigTimeRange:
+class ConfigPageRange:
     """crawler time range options
     """
 
     CONFIG_KEYS = {
         'board': str,
-        'time_begin': int,
-        'time_end': int,
+        'beginning_page': int,
+        'ending_page': int,
         'period': int
     }
 
-    def __init__(self, board, time_begin, time_end, period):
+    def __init__(self, board, beginning_page, ending_page, period):
         self.board = board
-        self.time_begin = time_begin
-        self.time_end = time_end
+        self.beginning_page = beginning_page
+        self.ending_page = ending_page
         self.period = period
 
 class Config:
@@ -70,15 +61,9 @@ class Config:
     """
 
     CONFIG_KEYS = {
-        'username': str,
-        'password': str,
-        'kick_others': bool,
         'ranges': list
     }
 
-    def __init__(self, username, password, kick_others, db, ranges):
-        self.username = username
-        self.password = password
-        self.kick_others = kick_others
-        self.db = db
+    def __init__(self, database, ranges):
+        self.database = database
         self.ranges = ranges

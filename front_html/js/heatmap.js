@@ -2,9 +2,8 @@
 var date = Date();
 var current_hour_progress = 0; // 取得今天的進度 ex: 正午12:00，為0.5
 var heatmap = new Array();
-var complete_number = 0;
 
-var heatmap_fetch_days = 56;
+var heatmap_fetch_days = 7;
 
 for (var i = 0; i < 7; i++) {
   heatmap[i] = new Array();
@@ -13,69 +12,61 @@ for (var i = 0; i < 7; i++) {
 function createHeatMap() {
 	date = new Date();
 	current_hour_progress = (date.getMinutes() * 60 + date.getSeconds()) / 86400;
-  complete_number = 0;
 
   resetHeatmapArray();
 
 	// 取得距離i天前的資料
-	for (i = 0; i < heatmap_fetch_days; i++) {
-    for(j = 0; j < 24; j++) {
-      request(i, j);
-    }
-	}
+	request();
 }
 
-function request(day, hour) {
+function request() {
 	var url;
-	url = "https://ptt.imyz.tw/query/get_users_pushes_count?beginning_day=" + (current_hour_progress + ((hour + 1) / 24) + day) + "&ending_day=" + (current_hour_progress + (hour / 24) + day);
-
-	// url = "https://ptt.imyz.tw/query/get_users_pushes_count?beginning_day=" + 1 + "&ending_day=" + 0;
+	url = "https://ptt.imyz.tw/query/get_pushes_by_username?username=" + username + "&beginning_day=" + heatmap_fetch_days + "&ending_day=0";
 
 	var users_pushes_count_obj;
 	var users_pushes_count_json;
 
 	var xmlhttp = new XMLHttpRequest();
 	xmlhttp.onreadystatechange = function() {
+    loadingGif();
 		if (this.readyState == 4 && this.status == 200) {
-        complete_number++
-        console.log(complete_number);
+        console.log("success");
 
 	  		users_pushes_count_obj = JSON.parse(this.responseText);
 		    users_pushes_count_json = JSON.stringify(users_pushes_count_obj);
+
 		    for (index in users_pushes_count_json)
 		    {
-		    	if (users_pushes_count_obj[index] == undefined) {
-		    		continue;
-		    	}
-	        if (users_pushes_count_obj[index]["username"] == document.getElementById('search').value) {
-	        	var d = getDay(day);
-            var h = getHour(hour);
-            heatmap[d][h] += users_pushes_count_obj[index]["count"];
-	        	break;
-	        }
+          if (users_pushes_count_obj[index] == undefined){
+            continue;
+          }
+
+          var push_date = new Date(parseInt(users_pushes_count_obj[index]["date_time"]) * 1000);
+          console.log(push_date.getDay() + "-" +push_date.getHours())
+          heatmap[push_date.getDay()][push_date.getHours()]++;
 		    }
 	  	}
 	};
   xmlhttp.addEventListener("load", function(e){
-    if (complete_number >= heatmap_fetch_days * 24)
-      draw();
-    else if (complete_number == 1) {
-      while (document.getElementById('heatmap').firstChild) {
-          document.getElementById('heatmap').removeChild(document.getElementById('heatmap').firstChild);
-      }
-      var img = document.createElement('img');
-      img.src = "img/loading2.gif";
-      img.alt = "Loading...";
-      img.title = "Loading..."; 
-      img.className = "w3-image";
-      img.style.cssText = "display: block; margin:120px auto auto auto;";
-
-      document.getElementById('heatmap').appendChild(img);
-    }
+    draw();
   });
 
 	xmlhttp.open("GET", url, true);
 	xmlhttp.send();
+}
+
+function loadingGif() {
+  while (document.getElementById('heatmap').firstChild) {
+    document.getElementById('heatmap').removeChild(document.getElementById('heatmap').firstChild);
+  }
+  var img = document.createElement('img');
+  img.src = "img/loading2.gif";
+  img.alt = "Loading...";
+  img.title = "Loading..."; 
+  img.className = "w3-image";
+  img.style.cssText = "display: block; margin:120px auto auto auto;";
+
+  document.getElementById('heatmap').appendChild(img);
 }
 
 function resetHeatmapArray() {

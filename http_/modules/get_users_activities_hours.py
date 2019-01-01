@@ -10,6 +10,8 @@ class Module(BaseModule):
     """get_users_activities_hours module
     """
 
+    MAX = 1000
+
     def required_param(self):
         return (
             RequiredParam('beginning_day', int, 1),
@@ -28,7 +30,6 @@ class Module(BaseModule):
         result = dict()
 
         for day in range(ending_day, beginning_day):
-            print(beginning_day, ending_day)
             query = self.db_handler.query(
                 '''
 SELECT
@@ -54,6 +55,18 @@ WHERE
                 users[user][timestamp % 86400 // 3600] = 1
             for user in users:
                 users[user] = sum(users[user])
+            if len(users) > Module.MAX:
+                sorted_users = sorted(users.items(), key=lambda x: x[1])
+                boundary = sorted_users[-Module.MAX][1]
+                # get all users in same activities hours
+                # by linear search (I'm lazy)
+                for i in range(len(users) - Module.MAX, -1, -1):
+                    if sorted_users[i][1] < boundary:
+                        boundary_index = i
+                        break
+                else:
+                    boundary_index = 0
+                users = dict(sorted_users[boundary_index:])
             result[day] = users
 
         return {'statistic': result}

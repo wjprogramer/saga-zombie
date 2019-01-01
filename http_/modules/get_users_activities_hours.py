@@ -14,7 +14,7 @@ class Module(BaseModule):
 
     def required_param(self):
         return (
-            RequiredParam('beginning_day', int, 1),
+            RequiredParam('beginning_day', int, 7),
             RequiredParam('ending_day', int, 0),
         )
 
@@ -69,4 +69,4 @@ WHERE
                 users = dict(sorted_users[boundary_index:])
             result[day] = users
 
-        return {'statistic': result}
+        return result

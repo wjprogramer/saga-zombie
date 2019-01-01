@@ -1,0 +1,45 @@
+.SectionRuler {
+	height: 20px;
+	width: 100%;
+	border: 0;
+	background-repeat: no-repeat;
+	background-image: url(../img/section-header-hex.png);
+	background-position: center;
+	position: relative;
+	margin: 0;
+
+	box-sizing: content-box;
+	overflow: visible;
+}
+
+.SectionRuler:after, .SectionRuler:before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  height: 1px;
+  width: 140px;
+  background-color: #00a2ff;
+}
+
+.SectionRuler:before {
+  right: 50%;
+  margin-right: 10px;
+}
+.SectionRuler:after {
+  left: 50%;
+  margin-left: 11px;
+}
+.SubSection__headline {
+  color: #fff;
+  font-size: 24px;
+}
+@media (min-width: 640px) {
+  .SubSection__headline {
+    font-size: 29px;
+  }
+}
+@media (min-width: 960px) {
+  .SubSection__headline {
+    font-size: 33px;
+  }
+}

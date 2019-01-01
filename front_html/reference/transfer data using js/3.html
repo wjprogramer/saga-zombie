@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>Document</title>
+	</head>
+	<body>
+		<script type="text/javascript">
+		//window.open打开的窗口.
+		//利用opener指向父窗口.
+		// var parentText = window.opener.document.all.maintext.value;
+		var parentText = window.opener.document.getElementById("a").innerHTML;
+		alert(parentText);
+		</script>
+	</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>傳遞資料</title>
+		<script
+		src="https://code.jquery.com/jquery-3.3.1.min.js"
+		integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+		crossorigin="anonymous"></script>
+	</head>
+	<body>
+		<h1>URL傳值</h1>
+		<form action="1.html" method="get">
+			<input type="text" name="name"/>
+			<input type="text" name="value" />
+			<input type="submit" value="提交"/>
+		</form>
+		<h1>Cookie</h1>
+		<form id="cookie_form" action="2.html" method="get">
+			<input id="name_input" type="text" name="name"/>
+			<input type="text" name="value" />
+			<input type="submit" value="提交"/>
+		</form>
+		<script>
+		$('#cookie_form').submit(function(){
+		addCookie('name', $('#name_input').val());
+		// addCookie('name', $('input["name"="name"]').val());
+		// addCookie('name', $('input["name"="value"]').val());
+		})
+		//设置Cookie
+		function addCookie(name,value,expireHours) {
+		var cookieString=name+"="+escape(value);
+		//判断是否设置过期时间
+		if(expireHours>0){
+		var date=new Date();
+		date.setTime(date.getTime+expireHours*3600*1000);
+		cookieString=cookieString+"; expire="+date.toGMTString();
+		}
+		document.cookie=cookieString;
+		}
+		</script>
+		<h1>Window.open</h1>
+		<form id="" action="3.html" method="post" target="_blank">
+			<input type="text" name="name"/>
+			<input type="text" name="value" />
+			<input type="submit" value="提交"/>
+		</form>
+		<div id="a">这两窗口之间存在着关系，父窗口index.html打开子窗口single.html子窗口可以通过window.opener指向父窗口，这样可以访问父窗口的对象，在single.html页面编写下面的代码： <br><br>
+			这个方法取值方便，只要window.opener指向父窗口，就可以访问所有对象。不仅可以访问值，还可以访问父窗口的方法，值长度无限制，缺点是两窗口要存在着关系，就是利用window.open打开的窗口不能跨域。
+		</div>
+		<h1>HTML5本地儲存</h1>
+		<p>HTML5中新加入了离线储存，那么我们就可以使用离线数据库保存我们的数据，然后在需要的地方调用数据，这就和在先应用没有却别了，这也可能是最好的解决方法。</p>
+		<script type="text/javascript">
+		// 由于是一个新的技术，你可以通过下面的代码检测你的浏览器是否支持
+		if(window.localStorage){
+		alert('This browser supports localStorage');
+		}else{
+		alert('This browser does NOT support localStorage');
+		}
+		// 儲存變數
+		localStorage.name = $('input["name"="name"]').val();
+		// 讀取變數
+		var myname = localStorage["name"];
+		</script>
+	</body>
+</html>

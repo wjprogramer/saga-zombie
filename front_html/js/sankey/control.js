@@ -1,7 +1,8 @@
 	
-	var userIp;
-	var userAmount ;
-	var userName;
+var userIp;
+var userAmount ;
+var userName;
+
 function searchID(){
 	userIp = new Array();
 	userAmount = new Array();
@@ -43,7 +44,6 @@ function finduserName(userName){
 	for(var i=0;i<data.length;i++){
 		if(data[i][1]==userName)
 		{
-			
 			userIp[userCount] = data[i][0];
 			userAmount[userCount] = data[i][2];
 			userCount++;

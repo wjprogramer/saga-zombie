@@ -1,6 +1,7 @@
 #main_content
 	margin-right: 50px
 	margin-left: 50px
+	background-color: #000000
 
 hr
 	display: block
@@ -16,3 +17,16 @@ hr
 button
 	margin-top: 10px
 	margin-right: 10px
+	
+
+.animate-fade-in 
+	opacity: 0
+	transform: translate(0,50px)
+	-webkit-transform: translate(0,50px)
+	
+.animate-fade-in.scrolled
+	opacity: 1
+	transform: translate(0,0)
+	-webkit-transform: translate(0,0)
+	transition: opacity 1s, transform 1s
+	-webkit-transition: opacity 1s, -webkit-transform 1s

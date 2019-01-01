@@ -16,10 +16,8 @@ class DayCache:
     """cache class
     """
 
-    def __init__(self, timestamp, counter):
-        self.timestamp = timestamp
+    def __init__(self, counter=None):
         self.counter = counter
-        self.lock = Lock()
 
 class Module(BaseModule):
     """get_word_freq module
@@ -27,41 +25,37 @@ class Module(BaseModule):
 
     cache = dict()
     cache_lock = Lock()
-    CACHE_LIFE = 1200
+    CACHE_DAYS = 365
     ROUTINE_PERIOD = 900
     caching_thread_checking_lock = Lock()
     caching_thread = None
     CATCH_TOP_N_WORDS = 200
+    CACHE_TOP_N_WORDS_PER_DAY = 1000
 
     def required_param(self):
         return (
             RequiredParam('beginning_day', int, 1),
-            RequiredParam('ending_day', int, 0)
+            RequiredParam('ending_day', int, 0),
+            RequiredParam('board', str, 'Gossiping')
         )
 
     @staticmethod
-    def __free_cache():
-        current = get_current_time()
-        with Module.cache_lock:
-            days_cache = tuple(Module.cache.values())
-        for day_cache in days_cache:
-            with day_cache.lock:
-                if Module.CACHE_LIFE < current - day_cache.timestamp:
-                    day_cache.counter = None
+    def __get_boards(db_handler):
+        return db_handler.query('SELECT `id` FROM `boards`;')
 
     @staticmethod
-    def __get_day_cache(day):
-        with Module.cache_lock:
-            if day not in Module.cache:
-                day_cache = DayCache(0, None)
-                Module.cache[day] = day_cache
-            else:
-                day_cache = Module.cache[day]
-        return day_cache
+    def __get_board_id(db_handler, board_name):
+        try:
+            return db_handler.query(
+                'SELECT `id` FROM `boards` WHERE `name` = :name ;',
+                {'name': board_name}
+            )[0][0]
+        except (IndexError, KeyError, TypeError):
+            return None
 
     @staticmethod
-    def __update_counter(db_handler, day, day_cache):
-        print('[module get_word_freq] updating counter for day:', day)
+    def __update_counter(db_handler, day, day_cache, board):
+        print('[module get_word_freq] updating counter for day:', board, day)
 
         current = get_current_time()
 
@@ -70,8 +64,10 @@ SELECT `content` FROM `posts_content`
 WHERE `post` IN (
     SELECT `id` FROM `posts`
     WHERE `date_time` BETWEEN :time_begin AND :time_end
+    AND `board` =  :board
 );''',
             {
+                'board': board,
                 'time_begin': current - (day + 1) * 86400,
                 'time_end': current - day * 86400
             })
@@ -81,40 +77,25 @@ WHERE `post` IN (
             raw = words_statistics.cut(row[0])
             counter.update(words_statistics.basic_filter(raw))
 
-        day_cache.timestamp = get_current_time()
-        day_cache.counter = counter
-
-        return counter
-
-    @staticmethod
-    def __get_counter(db_handler, day, day_cache):
-        current = get_current_time()
-
-        if day < 360:
-            counter = day_cache.counter
-            if counter is not None:
-                return counter
-            with day_cache.lock:
-                return day_cache.counter
-
-        with day_cache.lock:
-            if Module.CACHE_LIFE <= current - day_cache.timestamp:
-                return Module.__update_counter(db_handler, day, day_cache)
-            return day_cache.counter
+        day_cache.counter = counter.most_common(Module.CACHE_TOP_N_WORDS_PER_DAY)
 
     @staticmethod
     def __caching_thread_routine(db_handler):
         while True:
             try:
                 print('[module get_word_freq] in caching thread routine')
-                Module.__free_cache()
-                for day in range(0, 360):
-                    day_cache = Module.__get_day_cache(day)
-                    with day_cache.lock:
-                        Module.__update_counter(db_handler, day, day_cache)
+                for board in map(lambda x: x[0], Module.__get_boards(db_handler)):
+                    for day in range(Module.CACHE_DAYS):
+                        if board not in Module.cache:
+                            Module.cache[board] = dict()
+                        board_cache = Module.cache[board]
+                        if day not in board_cache:
+                            board_cache[day] = DayCache()
+                        day_cache = board_cache[day]
+                        Module.__update_counter(db_handler, day, day_cache, board)
                 sleep(Module.ROUTINE_PERIOD)
-            except KeyboardInterrupt as e:
-                raise e
+            except KeyboardInterrupt as exception:
+                raise exception
             except:
                 print_exc()
 
@@ -130,20 +111,23 @@ WHERE `post` IN (
         params = self.get_params()
         beginning_day = params[0]
         ending_day = params[1]
+        board = Module.__get_board_id(self.db_handler, params[2])
+
+        if board is None:
+            return {}
+
         if ending_day < 0 or beginning_day < ending_day:
             return {}
-        if beginning_day - ending_day > 30:
-            ending_day = beginning_day - 30
 
         result = Counter()
 
         # compute the result
         for day in range(ending_day, beginning_day + 1):
-            day_cache = Module.__get_day_cache(day)
-
-            counter = Module.__get_counter(self.db_handler, day, day_cache)
-
-            result.update(counter)
+            try:
+                counter = Module.cache[board][day].counter
+                result.update(dict(counter))
+            except (KeyError, TypeError, NameError):
+                pass
 
         result = list((k, v) for k, v in result.most_common(Module.CATCH_TOP_N_WORDS))
 

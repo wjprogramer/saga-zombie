@@ -30,10 +30,24 @@ def get_current_time() -> int:
     return int(time.time())
 
 
+def get_ptt_today_time() -> int:
+    """return the first second of unix time of today
+    """
+    current = get_current_time() + PTT_TIME_ZONE_OFFSET
+    return current - current % 86400 - PTT_TIME_ZONE_OFFSET
+
+
+def get_ptt_this_week_time() -> int:
+    """return the first second of unix time of this week
+    """
+    current = get_current_time() + PTT_TIME_ZONE_OFFSET
+    return current - (current - 259200) % 604800 - \
+        PTT_TIME_ZONE_OFFSET
+
+
 def get_current_time_str() -> str:
     """return time.strftime('%Y%m%d-%H%M%S')
     """
-
     return time.strftime('%Y%m%d-%H%M%S')
 
 

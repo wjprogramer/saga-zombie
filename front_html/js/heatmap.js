@@ -4,14 +4,10 @@ var current_hour_progress = 0; // 取得今天的進度 ex: 正午12:00，為0.5
 var heatmap = new Array();
 var complete_number = 0;
 
-for (var i = 0; i < 7; i++) {
-  heatmap[i] = new Array();
-}
+var heatmap_fetch_days = 56;
 
 for (var i = 0; i < 7; i++) {
-  for (var j = 0; j < 24; j++) {
-    heatmap[i][j]=0;
-  }
+  heatmap[i] = new Array();
 }
 
 function createHeatMap() {
@@ -19,8 +15,10 @@ function createHeatMap() {
 	current_hour_progress = (date.getMinutes() * 60 + date.getSeconds()) / 86400;
   complete_number = 0;
 
+  resetHeatmapArray();
+
 	// 取得距離i天前的資料
-	for (i = 0; i < 7; i++) {
+	for (i = 0; i < heatmap_fetch_days; i++) {
     for(j = 0; j < 24; j++) {
       request(i, j);
     }
@@ -52,15 +50,14 @@ function request(day, hour) {
 	        if (users_pushes_count_obj[index]["username"] == document.getElementById('search').value) {
 	        	var d = getDay(day);
             var h = getHour(hour);
-            heatmap[d][h] = users_pushes_count_obj[index]["count"];
-            console.log("" + d + "/" + h + ":" + heatmap[d][h]);
+            heatmap[d][h] += users_pushes_count_obj[index]["count"];
 	        	break;
 	        }
 		    }
 	  	}
 	};
   xmlhttp.addEventListener("load", function(e){
-    if (complete_number == 7 * 24) 
+    if (complete_number >= heatmap_fetch_days * 24)
       draw();
     else if (complete_number == 1) {
       while (document.getElementById('heatmap').firstChild) {
@@ -81,6 +78,14 @@ function request(day, hour) {
 	xmlhttp.send();
 }
 
+function resetHeatmapArray() {
+  for (var i = 0; i < 7; i++) {
+    for (var j = 0; j < 24; j++) {
+      heatmap[i][j]=0;
+    }
+  } 
+}
+
 function getDay(i) {
 	var day = (date.getDay() + 7 - i) % 7;
 	return day;
@@ -92,28 +97,19 @@ function getHour(i) {
 }
 
 /* PIXI */
-var heatmap_colors = [0xFFFFD9, 0xEDF8B1, 0xC7E9B4, 0x7FCDBB, 0x41B6C4, 0x1D91C0, 0x225EA8, 0x253494, 0x081D58]
+var heatmap_colors = [0xbbbbbb, 0xFFFFD9, 0xEDF8B1, 0xC7E9B4, 0x7FCDBB, 0x41B6C4, 0x1D91C0, 0x225EA8, 0x253494, 0x081D58];
+var heatmap_lower_bound = [0, 1, 2, 4, 5, 7, 26, 62, 99, 135];
 
 function getColor(value) {
-  if (value < 2) {
-    return heatmap_colors[0];
-  } else if (value < 4) {
-    return heatmap_colors[1];
-  } else if (value < 5) {
-    return heatmap_colors[2];
-  } else if (value < 7) {
-    return heatmap_colors[3];
-  } else if (value < 26) {
-    return heatmap_colors[4];
-  } else if (value < 62) {
-    return heatmap_colors[5];
-  } else if (value < 99) {
-    return heatmap_colors[6];
-  } else if (value < 135) {
-    return heatmap_colors[7];
-  } else {
-    return heatmap_colors[8]
+  for (var i = 0; i < 10; i++) {
+    if ( i == 9) {
+      return heatmap_colors[i];
+    }
+    if ( value >= heatmap_lower_bound[i] && value < heatmap_lower_bound[i+1]) {
+      return heatmap_colors[i];
+    }
   }
+  return heatmap_colors[0];
 }
 
 // Aliases
@@ -127,12 +123,10 @@ let Application = PIXI.Application,
     Graphics = PIXI.Graphics,
     Text = PIXI.Text;
 
-
 let type = "WebGL"
 if (!PIXI.utils.isWebGLSupported()) {
   type = "canvas"
 }
-
 PIXI.utils.sayHello(type)
 
 //Create a Pixi Application
@@ -157,11 +151,9 @@ function draw() {
   }
   document.getElementById('heatmap').appendChild(app.view);
   setup();
-
 }
 
 function setup() {
-
   // ** set y-axis - day of week
   var day_x = 15;
   var day_y = 55;
@@ -241,9 +233,7 @@ function setup() {
     }
     x = init_x;
     y += height + gap;
-  }
-
-  
+  }  
 } // end setup
 
 

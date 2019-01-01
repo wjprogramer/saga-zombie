@@ -13,6 +13,9 @@ function init() {
 			Request[strs[i ].split("=")[0]]=unescape(strs[i].split("=")[1]);
 		}
 	}
+
+	legend();
+
 	username = Request["username"];
 	$("#analysis_result").html("查詢對象: " + username);
 
@@ -34,10 +37,11 @@ function init() {
 function search(option) {
 	if (option == "ip") {
 		searchIP(); 
-	} else if (option == "id") {
+	} else {
 		createHeatMap();
 		searchID();
 		username = getName2();
+		personal_wordcloud(username);
 	}
 }
 
@@ -86,39 +90,83 @@ function changeRamenHeight() {
   }); // end of document ready
 })(jQuery); // end of jQuery name space
 
+// 處理圖例
+function legend() {
+	var legend_app = new PIXI.Application({
+		  width: 700,         // default: 800
+		  height: 30,        // default: 600
+		  antialias: true,    // default: false
+		  transparent: true, // default: false 透明度
+		  resolution: 1,      // default: 1
+		  preserveDrawingBuffer: true,
+		  backgroundColor: 0x000000
+		}
+	);
+
+	var legend_x = 0;
+	var legend_y = 0;
+	var legned_text_y = legend_y + 17;
+	var legend_width = 60;
+	var legend_height = 15;
+
+	for(i = 0; i < 10; i++) {
+		let rectangle = new Graphics();
+		rectangle.beginFill(heatmap_colors[i]) // 填充顏色
+		// rectangle.lineStyle(4, 0xFF3300, 1); // 寬度4 alpha為1
+		rectangle.drawRect(legend_x, legend_y, legend_width, legend_height);
+		rectangle.endFill(); // 結束繪製
+		legend_app.stage.addChild(rectangle);
+
+		var legned_message = new Text(heatmap_lower_bound[i], {fontSize: 10});
+		legned_message.position.set(legend_x, legned_text_y);
+	    legend_app.stage.addChild(legned_message);
+
+	    legend_x += legend_width;
+	}
+
+	document.getElementById('legend').appendChild(legend_app.view);
+}
+
 // 顯示文字雲
-$(function () {
-  $.ajax({
-          url: "https://ptt.imyz.tw/query/get_words_freq?beginning_day=8&ending_day=0",   //存取Json的網址
-          type: "GET",
-          dataType: 'json',
-          success: function (data) {
-                console.log(data.statistic);
-                console.log(data.statistic[0]);
-                data.statistic.forEach(function (element){
-                element[1] = element[1]/100;
-                console.log(element[1]);
-          });
-  var options = {
-            "list" : data.statistic,
-            "gridSize": 30, // size of the grid in pixels
-            "weightFactor": 2, // number to multiply for size of each word in the list
-            "fontWeight": 'normal', // 'normal', 'bold' or a callback
-            "fontFamily": 'Times, serif', // font to use
-            "color": 'random-light', // 'random-dark' or 'random-light'
-            "backgroundColor": '#757575', // the color of canvas
-            "rotateRatio": 1 // probability for the word to rotate. 1 means always rotate
-          };
-          // data.gridSize = 600;
-          // data.weightFactor = 10;
-          // data.fontWeight = 'normal';
-          // data.fontFamily = 'Times, serif';
-          // data.color = 'random-light';
-          // data.backgroundColor = '#333';
-          // data.rotateRatio = 'rotateRatio';
-          // console.log(data);
-          WordCloud.minFontSize = "15px";
-          WordCloud(document.getElementById('word_cloud'), options );
-        }
-      });
+function personal_wordcloud (username) {
+$.ajax({  
+      url: "https://ptt.imyz.tw/query/get_user_pushes_words_freq?username="+username,   //存取Json的網址
+      type: "GET",
+      dataType: 'json',
+      success: function (data) {
+            var yee_k = Object.keys(data);
+            console.log(yee_k);
+            var yee_v = Object.values(data);
+            console.log(yee_v);
+            yee = new Array();
+            for(var i = 0; i < yee_v.length; i++){
+              yee.push([yee_k[i],yee_v[i]]);
+            }
+              console.log(yee);
+
+     
+var options = {
+        "list" : yee,
+        "gridSize": 30, // size of the grid in pixels
+        "weightFactor": 10, // number to multiply for size of each word in the list
+        "fontWeight": 'normal', // 'normal', 'bold' or a callback
+        "fontFamily": 'Times, serif', // font to use
+        "color": 'random-light', // 'random-dark' or 'random-light'
+        "backgroundColor": '#757575', // the color of canvas
+        "rotateRatio": 1 // probability for the word to rotate. 1 means always rotate
+      };
+      // data.gridSize = 600;
+      // data.weightFactor = 10;
+      // data.fontWeight = 'normal';
+      // data.fontFamily = 'Times, serif';
+      // data.color = 'random-light';
+      // data.backgroundColor = '#333';
+      // data.rotateRatio = 'rotateRatio';
+      // console.log(data);
+      WordCloud.minFontSize = "15px";
+      WordCloud(document.getElementById('word_cloud'), options );
+    }
+
   });
+};
+

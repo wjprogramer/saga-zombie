@@ -20,14 +20,6 @@ docker build -t saga-zombie .
 
 ## Dev
 
-### 注意！！
-
-爬文不要用 `PTTLibrary.PTT.crawlBoard` ! 它會自爆！！！
-
-爬文不要用 `PTTLibrary.PTT.crawlBoard` ! 它會自爆！！！
-
-爬文不要用 `PTTLibrary.PTT.crawlBoard` ! 它會自爆！！！
-
 ### db.SQLiteDBHandler.`SQLiteDBHandler()`
 
 已經加入 lock 防止多執行序同時寫入資料庫造成錯誤。預設每插入 10000 比資料會寫入硬碟一次。
@@ -195,3 +187,33 @@ with SQLiteDBHandler('test.db') as db:
   * `author`
   * `ip`
   * `date_time`
+
+##### `get_users_activities_hours`
+
+###### Args
+
+- `beginning_day` (optional, default `7`)
+- `ending_day` (optional, default `0`)
+
+###### Result
+
+* `days_ago`
+  * list of user -> hour
+
+###### Ex
+
+```
+{
+   "statistic" : {
+      "3" : {
+         "smallcar801" : 7,
+         "jason985" : 5,
+         "bqack" : 5,
+         "cca1109" : 7,
+         "aenneas" : 6,
+         "ThreekRoger" : 7
+      }
+   }
+}
+```
+

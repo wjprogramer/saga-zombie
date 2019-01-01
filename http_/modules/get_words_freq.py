@@ -30,6 +30,7 @@ class Module(BaseModule):
     caching_thread_checking_lock = Lock()
     caching_thread = None
     CATCH_TOP_N_WORDS = 200
+    CACHE_TOP_N_WORDS_PER_DAY = 1000
 
     def required_param(self):
         return (
@@ -76,9 +77,7 @@ WHERE `post` IN (
             raw = words_statistics.cut(row[0])
             counter.update(words_statistics.basic_filter(raw))
 
-        day_cache.counter = counter
-
-        return counter
+        day_cache.counter = counter.most_common(Module.CACHE_TOP_N_WORDS_PER_DAY)
 
     @staticmethod
     def __caching_thread_routine(db_handler):
@@ -126,7 +125,7 @@ WHERE `post` IN (
         for day in range(ending_day, beginning_day + 1):
             try:
                 counter = Module.cache[board][day].counter
-                result.update(counter)
+                result.update(dict(counter))
             except (KeyError, TypeError, NameError):
                 pass
 

@@ -1,12 +1,15 @@
 	
-	var userIp;
-	var userAmount ;
-	var userName;
+var userIp;
+var userAmount ;
+var userName;
+
 function searchID(){
-	deleBtn();
 	userIp = new Array();
 	userAmount = new Array();
 	userName = document.getElementById("search").value;
+
+	clearSankey();
+	
 	if(userName =="")
 		alert("Enter a legal ID");
 	else
@@ -17,10 +20,12 @@ function searchID(){
     
 }
 function searchIP(){
-	deleBtn();
 	userName = new Array();
 	userAmount = new Array();
 	userIp = document.getElementById("search").value;
+
+	clearSankey();
+
 	if(userIp =="")
 		alert("Enter a legal IP");
 	else
@@ -30,15 +35,17 @@ function searchIP(){
 	}
     
 }
+function clearSankey() {
+	document.getElementById("sankey").innerHTML = ''
+}
 function finduserName(userName){
 	
 	var userCount = 0;
-	for(var i=0;i<data_i.length;i++){
-		if(data_i[i][1]==userName)
+	for(var i=0;i<data.length;i++){
+		if(data[i][1]==userName)
 		{
-			
-			userIp[userCount] = data_i[i][0];
-			userAmount[userCount] = data_i[i][2];
+			userIp[userCount] = data[i][0];
+			userAmount[userCount] = data[i][2];
 			userCount++;
 		}
 	}
@@ -47,12 +54,12 @@ function finduserName(userName){
 function finduserIp(userIp){
 	
 	var userCount = 0;
-	for(var i=0;i<data_i.length;i++){
-		if(data_i[i][0]==userIp)
+	for(var i=0;i<data.length;i++){
+		if(data[i][0]==userIp)
 		{
 			
-			userName[userCount] = data_i[i][1];
-			userAmount[userCount] = data_i[i][2];
+			userName[userCount] = data[i][1];
+			userAmount[userCount] = data[i][2];
 			userCount++;
 		}
 	}
@@ -65,7 +72,6 @@ function doSankey(){
 	sankey.setData(getSlide());
 	
 	sankey.draw();
-	makeBtn();
 }
 function doSankey2(){
 	var sankey = new Sankey();
@@ -74,7 +80,6 @@ function doSankey2(){
 	sankey.setData(getSlide2());
 	
 	sankey.draw();
-
 }
 function getName(userName){
 	return userName;

@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang='en' xml:lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type' />  
+    <title>我抓</title>
+    <script src="./raphael.js" type="text/javascript"></script>
+    <script src="./jquery.js" type="text/javascript"></script>
+    <script src="./sankey.js" type="text/javascript"></script>   
+    <script type="text/javascript" src="control.js"></script>
+    <script type="text/javascript" src="condo.js"></script>
+    <script src="./user_ip2.js"></script> 
+    <script src="./user_ip_group2.js"></script>
+    <script type="text/javascript" src="makeBtn.js"></script>
+				<link rel="stylesheet" href="./style.css" />
+        <style type="text/css">
+          .textinput,.changeBlock{
+            margin-left: 25%;
+            margin-top: 30px;
+          }
+        </style>
+  </head>
+  <body>
+    
+    <span> <input id="changeBut" type="button" name="change" class="changeBlock" width="100px" value="以IP進行找尋" onclick="changeText()"></span>
+    <div> 
+
+        <input id="search" placeholder="eg:abc123123" class="textinput" type="text" name="getmonth" autofocus>
+        <input id="idBtn" type="button" name="enterit" width="50px" value="Enter" onclick="searchID()" style="display: inline-block;">
+        <input id="ipBtn" type="button" name="enterit" width="50px" value="Enter" onclick="searchIP()" style="display: none;">
+        <div id="make"></div>
+        
+    </div>
+    <div id='sankey' style="width:1000px;height:1000px;">
+      &nbsp;
+    </div>
+    
+
+  </body>
+  <script type="text/javascript">
+    function changeText(){
+        if(document.getElementById("changeBut").value=="以IP進行找尋")
+        {
+          document.getElementById("changeBut").value = "以ID進行找尋";
+          document.getElementById("search").placeholder="eg:163.13.111.111";
+          document.getElementById("ipBtn").style.display="inline-block";
+          document.getElementById("idBtn").style.display="none";
+        }
+        else
+        {
+          document.getElementById("changeBut").value="以IP進行找尋";
+          document.getElementById("search").placeholder="eg:abc123123";
+           document.getElementById("ipBtn").style.display="none";
+          document.getElementById("idBtn").style.display="inline-block";
+        }
+    }
+  </script>
+</html>

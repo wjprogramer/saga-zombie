@@ -38,6 +38,7 @@ function search(option) {
 	if (option == "ip") {
 		searchIP(); 
 	} else {
+		clearSankey();
 		createHeatMap();
 		searchID();
 		username = getName2();
@@ -71,6 +72,10 @@ function changeRamenHeight() {
 	// } else {
 	// 	$("#sankey").height("500px");
 	// }
+}
+
+function clearSankey() {
+	document.getElementById("sankey").innerHTML = ''
 }
 
 // 處理動畫

@@ -6,6 +6,8 @@ function loadUserList() {
 	var users_pushes_count_obj;
 	var users_pushes_count_json;
 
+  var complete_number = 0;
+
 	var xmlhttp = new XMLHttpRequest();
 	xmlhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
@@ -45,16 +47,19 @@ function loadUserList() {
           console.log("count_of_week: " + count_of_week);
 
           var item_container = document.createElement("div");
-          item_container.onclick = function() { window.location.href = "result.html?username=" + this.innerHTML; };
+
+          item_container.onclick = function() { window.location.href = "result.html?username=" + getUsernameFromItem(this.innerHTML); }; // this  
           item_container.className = "item";
 
-          var para = document.createElement("p");
+          var para = document.createElement("span");
           var text = document.createTextNode(user_obj);
           // para.classList.add("");
           para.appendChild(text);
+          para.setAttribute("id", "para_id" + user_obj);
+          para.className = "para";
 
-          var count_info = document.createElement("p");
-          count_info.style.cssText = "display: block; margin-right: 0px;";
+          var count_info = document.createElement("span");
+          count_info.style.cssText = "margin-right: 0px;";
           count_info.className = "w3-right";
 
           var count_text = "";
@@ -68,12 +73,13 @@ function loadUserList() {
           var count_text_node = document.createTextNode(count_text);
           count_info.appendChild(count_text_node);
 
-          document.getElementById("item_container").appendChild(para);
-          document.getElementById("item_container").appendChild(count_info);
-
-
+          item_container.appendChild(para);
+          item_container.appendChild(count_info);
 
           document.getElementById("user_list").appendChild(item_container);
+
+          complete_number++;
+          if (complete_number == 20) { break; }
         }
 	  	}
 	};
@@ -85,6 +91,33 @@ function loadUserList() {
 
 loadUserList();
 
+function getUsernameFromItem(htmlString) {
+  console.log(htmlString);
+  var symbols = ['>', '<'];
+  var number = 0;
+  var range_index = [0, 0];
+
+  for (index in htmlString) {
+    if (number == 2)
+      break;
+    if (htmlString[index] == symbols[number]) {
+      range_index[number] = index;
+      number++;
+    }
+  }
+  
+  var target = "";
+  console.log("" + range_index[0] + "~" + range_index[1]);
+  for (i = range_index[0]; i < range_index[1]; i++) {
+    if(htmlString[i] == '<' || htmlString[i] == '>') {
+      continue;
+    }
+    target += htmlString[i];
+  }
+  console.log(target);
+  return target;
+}
+
 // 顯示文字雲
 $(function () {
   $.ajax({
@@ -92,11 +125,11 @@ $(function () {
           type: "GET",
           dataType: 'json',
           success: function (data) {
-                console.log(data.statistic);
-                console.log(data.statistic[0]);
+                // console.log(data.statistic);
+                // console.log(data.statistic[0]);
                 data.statistic.forEach(function (element){
                 element[1] = element[1]/100;
-                console.log(element[1]);
+                // console.log(element[1]);
           });
   var options = {
             "list" : data.statistic,

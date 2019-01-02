@@ -17,7 +17,7 @@ function init() {
 	legend();
 
 	username = Request["username"];
-	$("#analysis_result").html("查詢對象: " + username);
+	analysisObject();	
 
 	// -- search
 	document.getElementById("search").value = username;
@@ -38,12 +38,17 @@ function search(option) {
 	if (option == "ip") {
 		searchIP(); 
 	} else {
+		analysisObject();
 		clearSankey();
 		createHeatMap();
 		searchID();
 		username = getName2();
 		personal_wordcloud(username);
 	}
+}
+
+function analysisObject() {
+  $("#search_object").html("查詢對象: " + username);
 }
 
 // switch: ip / id search

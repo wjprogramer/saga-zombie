@@ -60,6 +60,7 @@ function finduserIp(userIp){
 }
 function doSankey(){
 	var sankey = new Sankey();
+	
 	sankey.stack(0,[getName(userName)]);
 	sankey.stack(1,getIp());
 	sankey.setData(getSlide());
@@ -69,6 +70,7 @@ function doSankey(){
 }
 function doSankey2(){
 	var sankey = new Sankey();
+	//sankey.clear();
 	sankey.stack(0,[getIp2(userIp)]);
 	sankey.stack(1,getName2());
 	sankey.setData(getSlide2());

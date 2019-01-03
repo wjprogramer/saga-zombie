@@ -17,7 +17,7 @@ function init() {
 	legend();
 
 	username = Request["username"];
-	$("#analysis_result").html("查詢對象: " + username);
+	analysisObject();	
 
 	// -- search
 	document.getElementById("search").value = username;
@@ -38,11 +38,17 @@ function search(option) {
 	if (option == "ip") {
 		searchIP(); 
 	} else {
+		analysisObject();
+		clearSankey();
 		createHeatMap();
 		searchID();
 		username = getName2();
 		personal_wordcloud(username);
 	}
+}
+
+function analysisObject() {
+  $("#search_object").html("查詢對象: " + username);
 }
 
 // switch: ip / id search
@@ -71,6 +77,10 @@ function changeRamenHeight() {
 	// } else {
 	// 	$("#sankey").height("500px");
 	// }
+}
+
+function clearSankey() {
+	document.getElementById("sankey").innerHTML = ''
 }
 
 // 處理動畫

@@ -2,8 +2,9 @@
 var date = Date();
 var current_hour_progress = 0; // 取得今天的進度 ex: 正午12:00，為0.5
 var heatmap = new Array();
+var complete_number = 0;
 
-var heatmap_fetch_days = 84;
+var heatmap_fetch_days = 56;
 
 for (var i = 0; i < 7; i++) {
   heatmap[i] = new Array();
@@ -12,61 +13,69 @@ for (var i = 0; i < 7; i++) {
 function createHeatMap() {
 	date = new Date();
 	current_hour_progress = (date.getMinutes() * 60 + date.getSeconds()) / 86400;
+  complete_number = 0;
 
   resetHeatmapArray();
 
 	// 取得距離i天前的資料
-	request();
+	for (i = 0; i < heatmap_fetch_days; i++) {
+    for(j = 0; j < 24; j++) {
+      request(i, j);
+    }
+	}
 }
 
-function request() {
+function request(day, hour) {
 	var url;
-	url = "https://ptt.imyz.tw/query/get_pushes_by_username?username=" + username + "&beginning_day=" + heatmap_fetch_days + "&ending_day=0";
+	url = "https://ptt.imyz.tw/query/get_users_pushes_count?beginning_day=" + (current_hour_progress + ((hour + 1) / 24) + day) + "&ending_day=" + (current_hour_progress + (hour / 24) + day);
+
+	// url = "https://ptt.imyz.tw/query/get_users_pushes_count?beginning_day=" + 1 + "&ending_day=" + 0;
 
 	var users_pushes_count_obj;
 	var users_pushes_count_json;
 
 	var xmlhttp = new XMLHttpRequest();
 	xmlhttp.onreadystatechange = function() {
-    loadingGif();
 		if (this.readyState == 4 && this.status == 200) {
-        console.log("success");
+        complete_number++
+        console.log(complete_number);
 
 	  		users_pushes_count_obj = JSON.parse(this.responseText);
 		    users_pushes_count_json = JSON.stringify(users_pushes_count_obj);
-
 		    for (index in users_pushes_count_json)
 		    {
-          if (users_pushes_count_obj[index] == undefined){
-            continue;
-          }
-
-          var push_date = new Date(parseInt(users_pushes_count_obj[index]["date_time"]) * 1000);
-          heatmap[push_date.getDay()][push_date.getHours()]++;
+		    	if (users_pushes_count_obj[index] == undefined) {
+		    		continue;
+		    	}
+	        if (users_pushes_count_obj[index]["username"] == document.getElementById('search').value) {
+	        	var d = getDay(day);
+            var h = getHour(hour);
+            heatmap[d][h] += users_pushes_count_obj[index]["count"];
+	        	break;
+	        }
 		    }
 	  	}
 	};
   xmlhttp.addEventListener("load", function(e){
-    draw();
-    analysis();
+    if (complete_number >= heatmap_fetch_days * 24)
+      draw();
+    else if (complete_number == 1) {
+      while (document.getElementById('heatmap').firstChild) {
+          document.getElementById('heatmap').removeChild(document.getElementById('heatmap').firstChild);
+      }
+      var img = document.createElement('img');
+      img.src = "img/loading2.gif";
+      img.alt = "Loading...";
+      img.title = "Loading..."; 
+      img.className = "w3-image";
+      img.style.cssText = "display: block; margin:120px auto auto auto;";
+
+      document.getElementById('heatmap').appendChild(img);
+    }
   });
 
 	xmlhttp.open("GET", url, true);
 	xmlhttp.send();
-}
-
-function loadingGif() {
-  while (document.getElementById('heatmap').firstChild) {
-    document.getElementById('heatmap').removeChild(document.getElementById('heatmap').firstChild);
-  }
-  var img = document.createElement('img');
-  img.src = "img/loading2.gif";
-  img.alt = "Loading...";
-  img.title = "Loading..."; 
-  img.className = "w3-image";
-  img.style.cssText = "display: block; margin:120px auto auto auto;";
-
-  document.getElementById('heatmap').appendChild(img);
 }
 
 function resetHeatmapArray() {
@@ -227,122 +236,4 @@ function setup() {
   }  
 } // end setup
 
-// 分析
-var concentrated_value = new Array();
 
-for (i = 0; i < 7; i++) {
-  concentrated_value[i] = new Array();
-  for (j = 0; j < 24; j++)
-    concentrated_value[i][j] = 0;
-}
-
-
-
-function analysis() {
-  console.log(concentrated_value);
-
-  var analysis_text = "";
-  calcAllConcentratedValues();
-  for (var i = 0; i < 7; i++) {
-    analysis_text += "" + i + "---";
-    for (var j = 0; j < 24; j++) {
-      analysis_text += concentrated_value[i][j] + " ";
-    }
-    analysis_text += "<br>";
-  }
-
-  $("#concentrated_values").html(analysis_text)
-
-  var test_output_text = "";
-  var concentrated_sum = 0.0;
-
-  var concentrated_mean_value = new Array();
-
-  for (var i = 0; i < 7; i++) {  
-    concentrated_mean_value[i] = getConcentratedMean(i);
-    concentrated_sum += concentrated_mean_value[i];
-  }
-
-  for (var i = 0; i < 7; i++) {
-    var percent_concentrated_mean = (concentrated_mean_value[i] / concentrated_sum ); //.toFixed(0) * 100.0
-    test_output_text += i + ": " + concentrated_mean_value[i] + "<br>";
-  }
-  $("#test_output").html(test_output_text);
-}
-
-// 計算所有集中值
-// 集中值的改善: 如果某值高於比例20%或其他比例，可能代表使用者特定時間內使用推噓過多。
-//              或是count過低也沒什麼參考價值
-function calcAllConcentratedValues() {
-  for (var i = 0; i < 7; i++) {
-    var percent_value = 0;
-    var sum = 0;
-
-    for (var j = 0; j < 24; j++) {
-      sum += heatmap[i][j];
-    }
-
-    percent_value = sum / 24.0;
-
-    for (var j = 0; j < 24; j++) {
-      concentrated_value[i][j] = getConcentratedValue(i, j, percent_value);
-    }
-  }
-}
-
-/**
-  * @percent_value: ( 1 / 一個星期的總推文數 ) => count以比例來計算 讓所有人的count總數都為1
-  */
-function getConcentratedValue(day, hour, percent_value) { // 計算heatmap(i,j)集中程度值
-  var result = 0;
-  var base_value = 13;
-  var isChecked = new Array();
-
-  for (i = 0; i < 24; i++) {
-    isChecked[i] = false;
-  }
-
-  result += heatmap[day][hour] * percent_value * base_value;
-
-  // 算右邊
-  for (i = 1; i < 13; i++) {
-    var tmp_hour = (hour + i) % 23;
-    result += heatmap[day][tmp_hour] * percent_value * (base_value - i);
-  }
-
-  // 算左邊
-  for (i = 1; i < 12; i++) {
-    var tmp_hour = (hour - i + 23) % 23;
-    result += heatmap[day][tmp_hour] * percent_value * (base_value - i);
-  }
-
-  return result.toFixed(2);
-}
-
-function getConcentratedMean(day) {
-  var output = 0.0;
-  var sum = 0;
-  for (var i = 0; i < 24; i++) {
-    console.log(sum);
-    sum += parseFloat(concentrated_value[day][i]);
-  }
-  output = sum / 24;
-  return output.toFixed(0);
-  // output.toFixed(2)
-}
-
-function calcStandardDeviation() { // standard_deviation
-
-}
-
-function mean(i) { // 星期i -> 算一個星期的平均值
-  var sum = 0;
-  var mean = 0;
-  
-  for (j = 0; j < 24; j++) {
-    sum += heatmap[i][j];
-  }
-
-  mean = sum / 24;
-  return mean;  
-}

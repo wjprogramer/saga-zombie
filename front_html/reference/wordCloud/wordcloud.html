@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="wordcloud2.js"></script>
+    <script
+    src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"></script>
+    
+  </head>
+  <body>
+    <canvas id="word_cloud" class="word_cloud" width="1000" height="1000"></canvas>
+  </body>
+  <script type="text/javascript">
+      // var options = {
+  //      "list": [
+  //          ['Google', 10],
+  //          ['Tencent', 9],
+  //          ['Alibaba', 7],
+  //          ['Baidu', 6],
+  //          ['NetEase', 4],
+  //          ['JD', 5],
+  //          ['Youku', 4],
+  //          ['Meituan', 3],
+  //          ['Douban', 3]
+  //      ],
+  //      "gridSize": 60, // size of the grid in pixels
+  //      "weightFactor": 10, // number to multiply for size of each word in the list
+  //      "fontWeight": 'normal', // 'normal', 'bold' or a callback
+  //      "fontFamily": 'Times, serif', // font to use
+  //      "color": 'random-light', // 'random-dark' or 'random-light'
+  //      "backgroundColor": '#333', // the color of canvas
+  //      "rotateRatio": 1 // probability for the word to rotate. 1 means always rotate
+  //  };
+  //   console.log(options);
+  // WordCloud.minFontSize = "15px"
+  // WordCloud(document.getElementById('word_cloud'), options );
+  </script>
+  <script type="text/javascript">
+  // dna = $.getJSON("https://ptt.imyz.tw/query/get_words_freq?beginning_day=2&fbclid=IwAR1eBvjWRg2W0GTbns6LRMpiheNJCeDZIV6AzNLxrGanFg0VpOh__qQinekLxrGanFg0VpOh__qQinek");
+  //    function dna = $.ajax({
+  //        type: "GET",
+  //        ataType: "json",
+  //        url: "https://ptt.imyz.tw/query/get_words_freq?beginning_day=2&fbclid=IwAR1eBvjWRg2W0GTbns6LRMpiheNJCeDZIV6AzNLxrGanFg0VpOh__qQinekLxrGanFg0VpOh__qQinek",
+  //        data: "data",
+  //        success: function(Jdata) {
+  //         alert("SUCCESS!!!");
+  //       }
+  // });
+  $(function () {
+  $.ajax({
+          url: "https://ptt.imyz.tw/query/get_words_freq?beginning_day=5&ending_day=4",   //存取Json的網址
+          type: "GET",
+          dataType: 'json',
+          success: function (data) {
+                alert("dsf");
+                console.log(data.statistic);
+                console.log(data.statistic[0]);
+                data.statistic.forEach(function (element){
+                element[1] = element[1]/100;
+                console.log(element[1]);
+          });
+  var options = {
+            "list" : data.statistic,
+            "gridSize": 30, // size of the grid in pixels
+            "weightFactor": 10, // number to multiply for size of each word in the list
+            "fontWeight": 'normal', // 'normal', 'bold' or a callback
+            "fontFamily": 'Times, serif', // font to use
+            "color": 'random-light', // 'random-dark' or 'random-light'
+            "backgroundColor": '#f1f1f1', // the color of canvas
+            "rotateRatio": 1 // probability for the word to rotate. 1 means always rotate
+          };
+          // data.gridSize = 600;
+          // data.weightFactor = 10;
+          // data.fontWeight = 'normal';
+          // data.fontFamily = 'Times, serif';
+          // data.color = 'random-light';
+          // data.backgroundColor = '#333';
+          // data.rotateRatio = 'rotateRatio';
+          // console.log(data);
+          WordCloud.minFontSize = "15px";
+          WordCloud(document.getElementById('word_cloud'), options );
+        }
+  
+      });
+  });
+  
+  </script>
+</html>

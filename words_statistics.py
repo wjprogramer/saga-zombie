@@ -1,13 +1,14 @@
 from threading import Lock
 import jieba
+import jieba.analyse
 import os
 
 jieba.enable_parallel(os.cpu_count())
 
 
-def cut(string):
-    with cut.lock:
-        return jieba.cut(string)
+def extract_tags(content, topK=20):
+    with extract_tags.lock:
+        return jieba.analyse.extract_tags(content, topK=topK)
 
 
 def basic_filter(d):
@@ -18,7 +19,7 @@ def basic_filter(d):
     return d
 
 
-cut.lock = Lock()
+extract_tags.lock = Lock()
 
 with open('useless_words.txt') as f:
     MORE_USELESS_WORDS = set(line[:-1] for line in f)

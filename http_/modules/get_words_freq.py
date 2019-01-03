@@ -26,7 +26,7 @@ class Module(BaseModule):
     cache = dict()
     cache_lock = Lock()
     CACHE_DAYS = 365
-    ROUTINE_PERIOD = 900
+    ROUTINE_PERIOD = 3600
     caching_thread_checking_lock = Lock()
     caching_thread = None
     CATCH_TOP_N_WORDS = 200
@@ -74,7 +74,7 @@ WHERE `post` IN (
 
         counter = Counter()
         for row in query_result:
-            raw = words_statistics.cut(row[0])
+            raw = words_statistics.extract_tags(row[0], Module.CACHE_TOP_N_WORDS_PER_DAY)
             counter.update(words_statistics.basic_filter(raw))
 
         day_cache.counter = counter.most_common(Module.CACHE_TOP_N_WORDS_PER_DAY)

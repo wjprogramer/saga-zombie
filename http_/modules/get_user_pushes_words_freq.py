@@ -40,6 +40,6 @@ WHERE `author` = (
 
         counter = Counter()
         for row in query_result:
-            counter.update(words_statistics.cut(row[0]))
+            counter.update(words_statistics.extract_tags(row[0]))
 
         return counter

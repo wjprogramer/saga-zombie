@@ -40,6 +40,6 @@ WHERE `post` = (
 
         try:
             return Counter(words_statistics.basic_filter(
-                words_statistics.cut(query_result[0][0])))
+                words_statistics.extract_tags(query_result[0][0])))
         except IndexError:
             return {}
